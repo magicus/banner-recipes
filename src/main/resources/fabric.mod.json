@@ -14,6 +14,7 @@
   },
   "license": "LGPL-3.0-only",
   "icon": "assets/banner-recipes/icon.png",
+  "accessWidener": "banner-recipes.accesswidener",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -25,6 +26,7 @@
   ],
   "depends": {
     "minecraft": "${supported_minecraft_versions}",
-    "fabricloader": ">=${loader_version}"
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": ">=${fabric_api_version}"
   }
 }

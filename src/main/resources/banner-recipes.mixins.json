@@ -1,5 +1,7 @@
 {
   "client": [
+    "AbstractContainerEventHandlerInputMixin",
+    "AbstractContainerScreenKeyPressedMixin",
     "LoomScreenMixin"
   ],
   "compatibilityLevel": "JAVA_25",

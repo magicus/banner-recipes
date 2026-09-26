@@ -6,13 +6,16 @@ plugins {
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 ext.mod_version = "${project.mod_base_version}+${project.minecraft_version}"
 version = ext.mod_version
+ext.fabric_api_version = project.fabric_api_version.tokenize('+')[0]
 
 loom {
     clientOnlyMinecraftJar()
+    accessWidenerPath = file('src/main/resources/banner-recipes.accesswidener')
 }
 
 processResources {
@@ -20,6 +23,7 @@ processResources {
         "mod_version": project.mod_version,
         "supported_minecraft_versions": project.supported_minecraft_versions,
         "loader_version": project.loader_version,
+        "fabric_api_version": project.fabric_api_version,
     ])
 
     filesMatching("fabric.mod.json") {
@@ -27,6 +31,7 @@ processResources {
             mod_version: project.mod_version,
             supported_minecraft_versions: project.supported_minecraft_versions,
             loader_version: project.loader_version,
+            fabric_api_version: project.fabric_api_version,
         ])
     }
 }

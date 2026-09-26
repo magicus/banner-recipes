@@ -13,6 +13,12 @@ public class BannerRecipesMod implements ClientModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+    private static final BannerRecipesManager MANAGER = new BannerRecipesManager();
+
+    public static BannerRecipesManager getManager() {
+        return MANAGER;
+    }
+
     @Override
     public void onInitializeClient() {
         BannerRecipesMod.LOGGER.info("Initializing BannerRecipesMod");
