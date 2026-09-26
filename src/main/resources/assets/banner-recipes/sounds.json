@@ -1,0 +1,18 @@
+{
+  "ui.active_slot_clear": {
+    "sounds": [
+      {
+        "name": "banner-recipes:ui/active_slot_clear"
+      }
+    ],
+    "subtitle": "banner-recipes.subtitles.ui.active_slot_clear"
+  },
+  "ui.active_slot_set": {
+    "sounds": [
+      {
+        "name": "banner-recipes:ui/active_slot_set"
+      }
+    ],
+    "subtitle": "banner-recipes.subtitles.ui.active_slot_set"
+  }
+}
