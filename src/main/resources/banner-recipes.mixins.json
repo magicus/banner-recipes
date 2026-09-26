@@ -1,0 +1,11 @@
+{
+  "client": [
+    "LoomScreenMixin"
+  ],
+  "compatibilityLevel": "JAVA_25",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "package": "se.icus.mag.bannerrecipes.mixin",
+  "required": true
+}

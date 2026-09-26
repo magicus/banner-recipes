@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "banner-recipes",
+  "version": "${mod_version}",
+  "name": "Banner Recipes",
+  "description": "Add loom recipes for banners, with Banner Packs and banner design import/export",
+  "authors": [
+    "magicus"
+  ],
+  "contact": {
+    "homepage": "https://github.com/magicus/banner-recipes",
+    "issues": "https://github.com/magicus/banner-recipes/issues",
+    "sources": "https://github.com/magicus/banner-recipes"
+  },
+  "license": "LGPL-3.0-only",
+  "icon": "assets/banner-recipes/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "se.icus.mag.bannerrecipes.BannerRecipesMod"
+    ]
+  },
+  "mixins": [
+    "banner-recipes.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${supported_minecraft_versions}",
+    "fabricloader": ">=${loader_version}"
+  }
+}
