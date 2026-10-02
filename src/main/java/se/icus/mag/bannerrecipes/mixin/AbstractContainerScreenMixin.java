@@ -29,6 +29,15 @@ public abstract class AbstractContainerScreenMixin {
         BannerRecipesMod.getManager().removeExtension();
     }
 
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void tickEnd(CallbackInfo ci) {
+        ScreenExtension extension = BannerRecipesMod.getManager().getExtension();
+        if (extension == null) return;
+
+        extension.tick();
+    }
+
+
     @Inject(method = "extractTooltip", at = @At("HEAD"), cancellable = true)
     private void onExtractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
         if (!((Object) this instanceof LoomScreen)) return;
