@@ -4,38 +4,40 @@
  */
 package se.icus.mag.bannerrecipes.gui;
 
-import java.util.List;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import se.icus.mag.bannerrecipes.BannerRecipesManager;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
-import se.icus.mag.bannerrecipes.gui.widgets.LoomScreenLeftBar;
+import se.icus.mag.bannerrecipes.gui.widgets.LoomScreenSidebar;
 
 public class LoomScreenExtension extends DelegatingScreenExtension {
-    private final BannerRecipesManager manager;
     private final LoomScreen screen;
+    private final BannerRecipesManager manager;
 
     public LoomScreenExtension(LoomScreen screen) {
-        BannerRecipesManager manager = BannerRecipesMod.getManager();
-        LoomScreenLeftBar leftBar = new LoomScreenLeftBar(screen, manager);
-        super(List.of(leftBar));
-
-        this.manager = manager;
         this.screen = screen;
+        this.manager = BannerRecipesMod.getManager();
     }
 
+    @Override
     public void init() {
-        super.init();
         manager.onLoomScreenOpened(screen.menu);
+
+        // Always show the sidebar
+        addWidget(new LoomScreenSidebar(screen));
+        super.init();
     }
 
+    @Override
     public void removed() {
-        super.removed();
         manager.onLoomScreenClosed();
+
+        super.removed();
     }
 
-    public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractBackground(context, mouseX, mouseY, delta);
+    @Override
+    public void tick() {
+        super.tick();
+
         manager.tick();
     }
 }

@@ -4,6 +4,7 @@
  */
 package se.icus.mag.bannerrecipes.mixin;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -16,7 +17,7 @@ import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
 
 @Mixin(AbstractContainerScreen.class)
-public abstract class AbstractContainerScreenKeyPressedMixin {
+public abstract class AbstractContainerScreenMixin {
     @Inject(method = "removed", at = @At("HEAD"))
     private void onRemoved(CallbackInfo ci) {
         if (!((Object) this instanceof LoomScreen)) return;
@@ -26,6 +27,16 @@ public abstract class AbstractContainerScreenKeyPressedMixin {
 
         extension.removed();
         BannerRecipesMod.getManager().removeExtension();
+    }
+
+    @Inject(method = "extractTooltip", at = @At("HEAD"), cancellable = true)
+    private void onExtractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
+        if (!((Object) this instanceof LoomScreen)) return;
+
+        ScreenExtension extension = BannerRecipesMod.getManager().getExtension();
+        if (extension == null) return;
+
+        extension.extractTooltip(graphics, mouseX, mouseY);
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)

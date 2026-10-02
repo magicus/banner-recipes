@@ -8,15 +8,24 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.PreeditEvent;
 
 public interface ScreenExtension {
     default void init() {}
 
     default void removed() {}
 
-    void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta);
+    default void tick() {}
+
+    default void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
+
+    default void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {}
 
     default boolean keyPressed(KeyEvent event) {
+        return false;
+    }
+
+    default boolean keyReleased(KeyEvent event) {
         return false;
     }
 
@@ -24,7 +33,15 @@ public interface ScreenExtension {
         return false;
     }
 
-    default boolean mouseClicked(MouseButtonEvent event) {
+    default boolean preeditUpdated(PreeditEvent event) {
+        return false;
+    }
+
+    default boolean isInputCaptured() {
+        return false;
+    }
+
+    default boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         return false;
     }
 

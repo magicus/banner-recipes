@@ -42,7 +42,7 @@ public abstract class LoomScreenMixin {
         ScreenExtension extension = BannerRecipesMod.getManager().getExtension();
         if (extension == null) return;
 
-        if (extension.mouseClicked(mouseButtonEvent)) {
+        if (extension.mouseClicked(mouseButtonEvent, doubleClick)) {
             cir.setReturnValue(true);
         }
     }

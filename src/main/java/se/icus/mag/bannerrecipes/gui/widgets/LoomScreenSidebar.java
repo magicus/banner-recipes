@@ -5,16 +5,16 @@
 package se.icus.mag.bannerrecipes.gui.widgets;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
-import se.icus.mag.bannerrecipes.BannerRecipesManager;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
 
-public class LoomScreenLeftBar implements ScreenExtension {
+public class LoomScreenSidebar implements ScreenExtension {
     private static final Identifier SIDEBAR_LOCATION =
             Identifier.fromNamespaceAndPath(BannerRecipesMod.MOD_ID, "textures/gui/sidebar_gui.png");
     private static final int SIDEBAR_WIDTH = 28;
@@ -29,35 +29,37 @@ public class LoomScreenLeftBar implements ScreenExtension {
     private static final int RECIPE_BUTTON_Y_OFFSET = 5;
 
     private final LoomScreen screen;
-    private final BannerRecipesManager manager;
 
-    private ImageButton recipeButton;
-
-    public LoomScreenLeftBar(LoomScreen screen, BannerRecipesManager manager) {
+    public LoomScreenSidebar(LoomScreen screen) {
         this.screen = screen;
-        this.manager = manager;
+        // Tell parent screen it has gotten wider
+        screen.imageWidth += BG_LEFT_PADDING;
     }
 
+    @Override
     public void init() {
-        // Shift original screen
-        screen.leftPos = getImageLeftPos() + BG_LEFT_PADDING;
-
-        recipeButton = new ImageButton(
+        screen.leftPos = calculateLeftPos();
+        screen.addRenderableWidget(new ImageButton(
                 screen.leftPos + RECIPE_BUTTON_X_OFFSET,
                 screen.topPos + RECIPE_BUTTON_Y_OFFSET,
                 RECIPE_BUTTON_WIDTH,
                 RECIPE_BUTTON_HEIGHT,
                 RecipeBookComponent.RECIPE_BUTTON_SPRITES,
-                button -> {
-                    manager.togglePanelOpen();
-                });
-
-        screen.addRenderableWidget(recipeButton);
+                this::onTogglePanel));
     }
 
-    private int getImageLeftPos() {
-        int extendedImageWidth = screen.imageWidth + BG_LEFT_PADDING;
-        return (screen.width - extendedImageWidth) / 2;
+    private int calculateLeftPos() {
+        return getBaseLeftPos();
+    }
+
+    private int getBaseLeftPos() {
+        return (screen.width - screen.imageWidth) / 2 + BG_LEFT_PADDING + 11;
+    }
+
+    private void onTogglePanel(Button button) {
+        // Update our button position if leftPos has changed
+        screen.leftPos = calculateLeftPos();
+        button.setX(screen.leftPos + RECIPE_BUTTON_X_OFFSET);
     }
 
     @Override

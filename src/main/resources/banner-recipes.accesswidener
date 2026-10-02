@@ -5,3 +5,4 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
 accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
