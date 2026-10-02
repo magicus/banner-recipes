@@ -114,8 +114,6 @@ public class BannerRecipesMod implements ClientModInitializer {
         return MANAGER;
     }
 
-    public static void recipeSelected(BannerRecipe recipe, boolean autoCraft) {}
-
     public static Registry<BannerPattern> getBannerPatternRegistry(Minecraft mc) {
         Registry<BannerPattern> registry =
                 mc.level.registryAccess().lookup(Registries.BANNER_PATTERN).orElse(null);

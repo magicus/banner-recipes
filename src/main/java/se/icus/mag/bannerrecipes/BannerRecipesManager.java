@@ -19,6 +19,7 @@ public class BannerRecipesManager {
     private RecipePanelView panelView;
     private boolean persistedStateOpen = false;
     private boolean persistedStateFiltering = false;
+    private BannerRecipe activeRecipe;
 
     public RecipePanelView getPanelView() {
         return panelView;
@@ -50,6 +51,7 @@ public class BannerRecipesManager {
 
     public void onLoomScreenOpened(LoomMenu menu) {
         panelView = new RecipePanelView(persistedStateOpen, persistedStateFiltering);
+        this.activeRecipe = null;
     }
 
     public void onLoomScreenClosed() {
@@ -58,6 +60,14 @@ public class BannerRecipesManager {
     }
 
     public void tick() {}
+
+    public void recipeSelected(BannerRecipe recipe, boolean autoCraft) {
+        this.activeRecipe = recipe;
+    }
+
+    public BannerRecipe getActiveRecipe() {
+        return activeRecipe;
+    }
 
     public void updatePanelVisibility() {
         loomExtension.updatePanelVisibility();

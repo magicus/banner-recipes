@@ -12,9 +12,11 @@ import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.RecipePanelView;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
+import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 
 public class LoomScreenSidebar implements ScreenExtension {
     private static final Identifier SIDEBAR_LOCATION =
@@ -49,6 +51,11 @@ public class LoomScreenSidebar implements ScreenExtension {
     private static final int RECIPE_BUTTON_Y_OFFSET = 5;
 
     private final LoomScreen screen;
+    private ImageButton recipeBookButton;
+    private ImageButton weaveButton;
+    private ImageButton editButton;
+    private ImageButton swapColorsButton;
+    private ImageButton manageButton;
 
     public LoomScreenSidebar(LoomScreen screen) {
         this.screen = screen;
@@ -59,7 +66,7 @@ public class LoomScreenSidebar implements ScreenExtension {
     @Override
     public void init() {
         screen.leftPos = calculateLeftPos();
-        ImageButton recipeBookButton = new ImageButton(
+        this.recipeBookButton = new ImageButton(
                 screen.leftPos + BUTTON_X_OFFSET,
                 screen.topPos + RECIPE_BUTTON_Y_OFFSET,
                 BUTTON_WIDTH,
@@ -68,7 +75,7 @@ public class LoomScreenSidebar implements ScreenExtension {
                 this::onTogglePanel);
         screen.addRenderableWidget(recipeBookButton);
 
-        ImageButton weaveButton = new ImageButton(
+        this.weaveButton = new ImageButton(
                 screen.leftPos + BUTTON_X_OFFSET,
                 screen.topPos + WEAVE_BUTTON_Y_OFFSET,
                 BUTTON_WIDTH,
@@ -77,7 +84,7 @@ public class LoomScreenSidebar implements ScreenExtension {
                 this::onWeaveButtonPressed);
         screen.addRenderableWidget(weaveButton);
 
-        ImageButton editButton = new ImageButton(
+        this.editButton = new ImageButton(
                 screen.leftPos + BUTTON_X_OFFSET,
                 screen.topPos + EDIT_BUTTON_Y_OFFSET,
                 BUTTON_WIDTH,
@@ -86,7 +93,7 @@ public class LoomScreenSidebar implements ScreenExtension {
                 this::onEditButtonPressed);
         screen.addRenderableWidget(editButton);
 
-        ImageButton swapColorsButton = new ImageButton(
+        this.swapColorsButton = new ImageButton(
                 screen.leftPos + BUTTON_X_OFFSET,
                 screen.topPos + SWAP_COLORS_BUTTON_Y_OFFSET,
                 BUTTON_WIDTH,
@@ -95,7 +102,7 @@ public class LoomScreenSidebar implements ScreenExtension {
                 this::onSwapColorsButtonPressed);
         screen.addRenderableWidget(swapColorsButton);
 
-        ImageButton manageButton = new ImageButton(
+        this.manageButton = new ImageButton(
                 screen.leftPos + BUTTON_X_OFFSET,
                 screen.topPos + MANAGE_BUTTON_Y_OFFSET,
                 BUTTON_WIDTH,
@@ -125,9 +132,14 @@ public class LoomScreenSidebar implements ScreenExtension {
         RecipePanelView view = BannerRecipesMod.getManager().getPanelView();
         view.setPanelOpen(!view.isPanelOpen());
 
-        // Update our button position if leftPos has changed
+        // Update our button positions if leftPos has changed
         screen.leftPos = calculateLeftPos();
-        button.setX(screen.leftPos + BUTTON_X_OFFSET);
+
+        recipeBookButton.setX(screen.leftPos + BUTTON_X_OFFSET);
+        weaveButton.setX(screen.leftPos + BUTTON_X_OFFSET);
+        editButton.setX(screen.leftPos + BUTTON_X_OFFSET);
+        swapColorsButton.setX(screen.leftPos + BUTTON_X_OFFSET);
+        manageButton.setX(screen.leftPos + BUTTON_X_OFFSET);
     }
 
     @Override
@@ -143,5 +155,11 @@ public class LoomScreenSidebar implements ScreenExtension {
                 SIDEBAR_HEIGHT,
                 SIDEBAR_WIDTH,
                 SIDEBAR_HEIGHT);
+
+        BannerRecipe activeRecipe = BannerRecipesMod.getManager().getActiveRecipe();
+        if (activeRecipe != null) {
+            ItemStack itemStack = BannerRecipesMod.getItemStack(activeRecipe);
+            context.fakeItem(itemStack, screen.leftPos - BG_LEFT_PADDING + 8, screen.topPos + 48);
+        }
     }
 }

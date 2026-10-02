@@ -123,7 +123,7 @@ public class RecipePanelPage {
         public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             if (super.mouseClicked(event, doubleClick)) {
                 if (event.button() == 1) {
-                    BannerRecipesMod.recipeSelected(recipe, event.hasShiftDown());
+                    BannerRecipesMod.getManager().recipeSelected(recipe, event.hasShiftDown());
                 }
             }
             return false;
