@@ -112,7 +112,9 @@ public class LoomScreenSidebar implements ScreenExtension {
         screen.addRenderableWidget(manageButton);
     }
 
-    private void onWeaveButtonPressed(Button button) {}
+    private void onWeaveButtonPressed(Button button) {
+        BannerRecipesMod.getManager().weaveActiveRecipe();
+    }
 
     private void onEditButtonPressed(Button button) {}
 

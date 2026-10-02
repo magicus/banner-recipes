@@ -13,6 +13,7 @@ import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
 import se.icus.mag.bannerrecipes.storage.LoomRecipeCategories;
 import se.icus.mag.bannerrecipes.storage.LoomRecipeDatabase;
+import se.icus.mag.bannerrecipes.weaver.Weaver;
 
 public class BannerRecipesManager {
     private LoomScreenExtension loomExtension;
@@ -20,6 +21,7 @@ public class BannerRecipesManager {
     private boolean persistedStateOpen = false;
     private boolean persistedStateFiltering = false;
     private BannerRecipe activeRecipe;
+    private Weaver weaver;
 
     public RecipePanelView getPanelView() {
         return panelView;
@@ -52,6 +54,7 @@ public class BannerRecipesManager {
     public void onLoomScreenOpened(LoomMenu menu) {
         panelView = new RecipePanelView(persistedStateOpen, persistedStateFiltering);
         this.activeRecipe = null;
+        this.weaver = Weaver.getWeaver(menu);
     }
 
     public void onLoomScreenClosed() {
@@ -59,14 +62,24 @@ public class BannerRecipesManager {
         persistedStateFiltering = panelView.isFiltering();
     }
 
-    public void tick() {}
+    public void tick() {
+        if (weaver != null) {
+            weaver.tick();
+        }
+    }
 
-    public void recipeSelected(BannerRecipe recipe, boolean autoCraft) {
+    public void recipeSelected(BannerRecipe recipe, boolean autoWeave) {
         this.activeRecipe = recipe;
     }
 
     public BannerRecipe getActiveRecipe() {
         return activeRecipe;
+    }
+
+    public void weaveActiveRecipe() {
+        if (activeRecipe != null && weaver != null) {
+            weaver.weave(activeRecipe);
+        }
     }
 
     public void updatePanelVisibility() {

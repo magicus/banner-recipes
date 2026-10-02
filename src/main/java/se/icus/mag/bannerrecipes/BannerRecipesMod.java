@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeLayer;
+import se.icus.mag.bannerrecipes.util.Lookup;
 
 public class BannerRecipesMod implements ClientModInitializer {
     public static final String MOD_ID = "banner-recipes";
@@ -36,30 +37,9 @@ public class BannerRecipesMod implements ClientModInitializer {
 
     private static final BannerRecipesManager MANAGER = new BannerRecipesManager();
 
-    public static Item getBannerFromDyeColor(DyeColor bannerColorEnum) {
-        return switch (bannerColorEnum) {
-            case WHITE -> Items.BANNER.white();
-            case ORANGE -> Items.BANNER.orange();
-            case MAGENTA -> Items.BANNER.magenta();
-            case LIGHT_BLUE -> Items.BANNER.lightBlue();
-            case YELLOW -> Items.BANNER.yellow();
-            case LIME -> Items.BANNER.lime();
-            case PINK -> Items.BANNER.pink();
-            case GRAY -> Items.BANNER.gray();
-            case LIGHT_GRAY -> Items.BANNER.lightGray();
-            case CYAN -> Items.BANNER.cyan();
-            case PURPLE -> Items.BANNER.purple();
-            case BLUE -> Items.BANNER.blue();
-            case BROWN -> Items.BANNER.brown();
-            case GREEN -> Items.BANNER.green();
-            case RED -> Items.BANNER.red();
-            case BLACK -> Items.BANNER.black();
-        };
-    }
-
     public static ItemStack getItemStack(BannerRecipe recipe) {
         Registry<BannerPattern> registry = getBannerPatternRegistry(Minecraft.getInstance());
-        Item baseBannerItem = getBannerFromDyeColor(DyeColor.byName(recipe.bannerColor(), DyeColor.WHITE));
+        Item baseBannerItem = Lookup.getBannerFromDyeColor(DyeColor.byName(recipe.bannerColor(), DyeColor.WHITE));
         ItemStack stack = new ItemStack(baseBannerItem);
 
         if (recipe.layers().isEmpty()) return stack;
