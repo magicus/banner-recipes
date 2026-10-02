@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
+import se.icus.mag.bannerrecipes.RecipePanelView;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
 
 public class LoomScreenSidebar implements ScreenExtension {
@@ -49,7 +50,7 @@ public class LoomScreenSidebar implements ScreenExtension {
     }
 
     private int calculateLeftPos() {
-        return getBaseLeftPos();
+        return getBaseLeftPos() + (BannerRecipesMod.getManager().getPanelView().isPanelOpen() ? 77 : 0);
     }
 
     private int getBaseLeftPos() {
@@ -57,6 +58,9 @@ public class LoomScreenSidebar implements ScreenExtension {
     }
 
     private void onTogglePanel(Button button) {
+        RecipePanelView view = BannerRecipesMod.getManager().getPanelView();
+        view.setPanelOpen(!view.isPanelOpen());
+
         // Update our button position if leftPos has changed
         screen.leftPos = calculateLeftPos();
         button.setX(screen.leftPos + RECIPE_BUTTON_X_OFFSET);

@@ -8,10 +8,13 @@ import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import se.icus.mag.bannerrecipes.BannerRecipesManager;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.gui.widgets.LoomScreenSidebar;
+import se.icus.mag.bannerrecipes.gui.widgets.panel.RecipePanel;
 
 public class LoomScreenExtension extends DelegatingScreenExtension {
     private final LoomScreen screen;
     private final BannerRecipesManager manager;
+    private RecipePanel recipePanel;
+    private boolean panelVisible;
 
     public LoomScreenExtension(LoomScreen screen) {
         this.screen = screen;
@@ -25,6 +28,30 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
         // Always show the sidebar
         addWidget(new LoomScreenSidebar(screen));
         super.init();
+
+        RecipePanel recipePanel = new RecipePanel();
+        recipePanel.init(screen.width, screen.height);
+        this.recipePanel = recipePanel;
+
+        panelVisible = false;
+        updatePanelVisibility();
+    }
+
+    public void updateRecipesInPanel() {
+        recipePanel.refreshContent();
+    }
+
+    public void updatePanelVisibility() {
+        if (manager.getPanelView().isPanelOpen() && !this.panelVisible) {
+            screen.addRenderableWidget(this.recipePanel);
+            addWidget(this.recipePanel);
+            panelVisible = true;
+        }
+        if (!manager.getPanelView().isPanelOpen() && this.panelVisible) {
+            screen.removeWidget(this.recipePanel);
+            removeWidget(this.recipePanel);
+            panelVisible = false;
+        }
     }
 
     @Override

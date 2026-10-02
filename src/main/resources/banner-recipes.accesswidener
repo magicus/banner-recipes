@@ -4,5 +4,20 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent book Lnet/minecraft/client/ClientRecipeBook;
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent recipeBookPage Lnet/minecraft/client/gui/screens/recipebook/RecipeBookPage;
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent tabButtons Ljava/util/List;
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent time F
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent visible Z
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage recipeBook Lnet/minecraft/client/ClientRecipeBook;
 accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+accessible method net/minecraft/client/gui/screens/Screen addWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
+accessible method net/minecraft/client/gui/screens/Screen removeWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)V
+extendable class net/minecraft/stats/RecipeBookSettings
+extendable method net/minecraft/client/gui/screens/recipebook/RecipeBookComponent initVisuals ()V
+extendable method net/minecraft/client/gui/screens/recipebook/RecipeBookComponent isVisibleAccordingToBookData ()Z
+extendable method net/minecraft/stats/RecipeBookSettings updateSettings (Lnet/minecraft/world/inventory/RecipeBookType;Ljava/util/function/UnaryOperator;)V
 mutable field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
+mutable field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent recipeBookPage Lnet/minecraft/client/gui/screens/recipebook/RecipeBookPage;
+mutable field net/minecraft/client/gui/screens/recipebook/RecipeBookPage recipeBook Lnet/minecraft/client/ClientRecipeBook;
+mutable field net/minecraft/stats/RecipeBook bookSettings Lnet/minecraft/stats/RecipeBookSettings;
