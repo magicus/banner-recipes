@@ -15,6 +15,7 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
     private final BannerRecipesManager manager;
     private RecipePanel recipePanel;
     private boolean panelVisible;
+    private LoomScreenSidebar sidebar;
 
     public LoomScreenExtension(LoomScreen screen) {
         this.screen = screen;
@@ -26,7 +27,8 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
         manager.onLoomScreenOpened(screen.menu);
 
         // Always show the sidebar
-        addWidget(new LoomScreenSidebar(screen));
+        this.sidebar = new LoomScreenSidebar(screen);
+        addWidget(sidebar);
         super.init();
 
         RecipePanel recipePanel = new RecipePanel();
@@ -35,6 +37,10 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
 
         panelVisible = false;
         updatePanelVisibility();
+    }
+
+    public void updateActiveRecipe() {
+        sidebar.updateActiveRecipe();
     }
 
     public void updateRecipesInPanel() {

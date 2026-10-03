@@ -70,6 +70,7 @@ public class BannerRecipesManager {
 
     public void recipeSelected(BannerRecipe recipe, boolean autoWeave) {
         this.activeRecipe = recipe;
+        this.loomExtension.updateActiveRecipe();
     }
 
     public BannerRecipe getActiveRecipe() {

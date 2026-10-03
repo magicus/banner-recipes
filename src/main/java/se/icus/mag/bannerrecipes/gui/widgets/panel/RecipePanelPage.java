@@ -10,15 +10,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.RecipePanelView;
+import se.icus.mag.bannerrecipes.gui.tooltip.BannerRecipeTooltipProvider;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 
 public class RecipePanelPage {
@@ -89,6 +88,7 @@ public class RecipePanelPage {
         private final Minecraft minecraft;
         private final BannerRecipe recipe;
         private final ItemStack itemStack;
+        private final BannerRecipeTooltipProvider bannerRecipeTooltipProvider;
 
         public RecipePanelPageButton(int row, int column, BannerRecipe recipe) {
             int buttonLeftPos = leftPos + 11 + BACKGROUND_SIZE * column;
@@ -96,8 +96,9 @@ public class RecipePanelPage {
 
             super(buttonLeftPos, buttonTopPos, BACKGROUND_SIZE, BACKGROUND_SIZE, CommonComponents.EMPTY);
             this.recipe = recipe;
-            this.minecraft = Minecraft.getInstance();
             this.itemStack = BannerRecipesMod.getItemStack(recipe);
+            this.bannerRecipeTooltipProvider = new BannerRecipeTooltipProvider(recipe);
+            this.minecraft = Minecraft.getInstance();
         }
 
         @Override
@@ -109,14 +110,7 @@ public class RecipePanelPage {
         }
 
         public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-            Identifier tooltipStyle = itemStack.get(DataComponents.TOOLTIP_STYLE);
-
-            graphics.setComponentTooltipForNextFrame(
-                    minecraft.font,
-                    new ArrayList<>(Screen.getTooltipFromItem(minecraft, itemStack)),
-                    mouseX,
-                    mouseY,
-                    tooltipStyle);
+            bannerRecipeTooltipProvider.extractTooltip(graphics, mouseX, mouseY, minecraft);
         }
 
         @Override

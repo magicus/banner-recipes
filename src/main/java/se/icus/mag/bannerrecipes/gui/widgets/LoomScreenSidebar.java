@@ -4,6 +4,7 @@
  */
 package se.icus.mag.bannerrecipes.gui.widgets;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.RecipePanelView;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
+import se.icus.mag.bannerrecipes.gui.tooltip.BannerRecipeTooltipProvider;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 
 public class LoomScreenSidebar implements ScreenExtension {
@@ -56,6 +58,9 @@ public class LoomScreenSidebar implements ScreenExtension {
     private ImageButton editButton;
     private ImageButton swapColorsButton;
     private ImageButton manageButton;
+    private BannerRecipe activeRecipe;
+    private ItemStack activeRecipeItemStack;
+    private BannerRecipeTooltipProvider activeRecipeTooltip;
 
     public LoomScreenSidebar(LoomScreen screen) {
         this.screen = screen;
@@ -110,6 +115,19 @@ public class LoomScreenSidebar implements ScreenExtension {
                 LoomScreenSidebar.MANAGE_BUTTON_SPRITES,
                 this::onManageButtonPressed);
         screen.addRenderableWidget(manageButton);
+
+        updateActiveRecipe();
+    }
+
+    public void updateActiveRecipe() {
+        activeRecipe = BannerRecipesMod.getManager().getActiveRecipe();
+        if (activeRecipe != null) {
+            this.activeRecipeItemStack = BannerRecipesMod.getItemStack(activeRecipe);
+            this.activeRecipeTooltip = new BannerRecipeTooltipProvider(activeRecipe);
+        } else {
+            this.activeRecipeItemStack = null;
+            this.activeRecipeTooltip = null;
+        }
     }
 
     private void onWeaveButtonPressed(Button button) {
@@ -158,10 +176,19 @@ public class LoomScreenSidebar implements ScreenExtension {
                 SIDEBAR_WIDTH,
                 SIDEBAR_HEIGHT);
 
-        BannerRecipe activeRecipe = BannerRecipesMod.getManager().getActiveRecipe();
         if (activeRecipe != null) {
-            ItemStack itemStack = BannerRecipesMod.getItemStack(activeRecipe);
-            context.fakeItem(itemStack, screen.leftPos - BG_LEFT_PADDING + 8, screen.topPos + 48);
+            context.fakeItem(activeRecipeItemStack, screen.leftPos - BG_LEFT_PADDING + 8, screen.topPos + 48);
+        }
+    }
+
+    @Override
+    public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        if (activeRecipe == null) return;
+
+        int previewX = screen.leftPos - BG_LEFT_PADDING + 8;
+        int previewY = screen.topPos + 48;
+        if (mouseX >= previewX && mouseX < previewX + 16 && mouseY >= previewY && mouseY < previewY + 16) {
+            activeRecipeTooltip.extractTooltip(graphics, mouseX, mouseY, Minecraft.getInstance());
         }
     }
 }
