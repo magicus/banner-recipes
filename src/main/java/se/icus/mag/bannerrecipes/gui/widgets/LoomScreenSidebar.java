@@ -51,6 +51,7 @@ public class LoomScreenSidebar implements ScreenExtension {
     private static final int BUTTON_X_OFFSET = -16;
 
     private static final int RECIPE_BUTTON_Y_OFFSET = 5;
+    public static final int GUIDE_PROGRESS_TEXT_COLOR = 0xFFFFFFFF;
 
     private final LoomScreen screen;
     private ImageButton recipeBookButton;
@@ -61,9 +62,12 @@ public class LoomScreenSidebar implements ScreenExtension {
     private BannerRecipe activeRecipe;
     private ItemStack activeRecipeItemStack;
     private BannerRecipeTooltipProvider activeRecipeTooltip;
+    private Minecraft minecraft;
 
     public LoomScreenSidebar(LoomScreen screen) {
         this.screen = screen;
+        this.minecraft = Minecraft.getInstance();
+
         // Tell parent screen it has gotten wider
         screen.imageWidth += BG_LEFT_PADDING;
     }
@@ -178,6 +182,12 @@ public class LoomScreenSidebar implements ScreenExtension {
 
         if (activeRecipe != null) {
             context.fakeItem(activeRecipeItemStack, screen.leftPos - BG_LEFT_PADDING + 8, screen.topPos + 48);
+            if (BannerRecipesMod.getManager().getWeavingProgress() >= 0) {
+                String progress = (BannerRecipesMod.getManager().getWeavingProgress() + 1) + "/"
+                        + activeRecipe.layers().size();
+                int x = screen.leftPos - BG_LEFT_PADDING + 8 + (16 - minecraft.font.width(progress)) / 2;
+                context.text(minecraft.font, progress, x, screen.topPos + 34, GUIDE_PROGRESS_TEXT_COLOR, true);
+            }
         }
     }
 
@@ -188,7 +198,12 @@ public class LoomScreenSidebar implements ScreenExtension {
         int previewX = screen.leftPos - BG_LEFT_PADDING + 8;
         int previewY = screen.topPos + 48;
         if (mouseX >= previewX && mouseX < previewX + 16 && mouseY >= previewY && mouseY < previewY + 16) {
-            activeRecipeTooltip.extractTooltip(graphics, mouseX, mouseY, Minecraft.getInstance());
+            activeRecipeTooltip.extractTooltip(
+                    graphics,
+                    mouseX,
+                    mouseY,
+                    minecraft,
+                    BannerRecipesMod.getManager().getWeavingProgress());
         }
     }
 }

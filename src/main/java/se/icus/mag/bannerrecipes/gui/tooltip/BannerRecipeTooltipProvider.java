@@ -40,16 +40,21 @@ public class BannerRecipeTooltipProvider {
     private static final int PATTERN_X = 42;
     private static final int NUMBER_X = 58;
     private static final int DESCRIPTION_X = 78;
+    private static final int PROGRESS_COLUMN_WIDTH = 16;
+    private static final int PROGRESS_MARKER_X_OFFSET = 4;
 
     private static final int PATTERN_WIDTH = 7;
     private static final int PATTERN_HEIGHT = 14;
 
     private static final int TITLE_GAP = 2;
-    private static final int TEXT_COLOR = 0xFFFFFFFF;
+    private static final int TITLE_COLOR = 0xFFFFFFFF;
+    private static final int STEP_TEXT_COLOR_DEFAULT = 0xFFFFFFFF;
     private static final int TOOLTIP_X_OFFSET = 12;
     private static final int TOOLTIP_Y_OFFSET = 12;
     private static final int TOOLTIP_SCREEN_MARGIN = 4;
     private static final int TOOLTIP_BOTTOM_MARGIN = 3;
+    public static final int STEP_TEXT_COLOR_DONE = 0xFF888888;
+    public static final int STEP_TEXT_COLOR_CURRENT = 0xFF55FF55;
 
     private final Minecraft minecraft;
     private final int width;
@@ -155,13 +160,20 @@ public class BannerRecipeTooltipProvider {
     }
 
     public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, Minecraft minecraft) {
-        int x = getTooltipX(mouseX, minecraft.getWindow().getGuiScaledWidth());
+        extractTooltip(graphics, mouseX, mouseY, minecraft, -1);
+    }
+
+    public void extractTooltip(
+            GuiGraphicsExtractor graphics, int mouseX, int mouseY, Minecraft minecraft, int currentProgress) {
+        int progressOffset = currentProgress >= 0 ? PROGRESS_COLUMN_WIDTH : 0;
+        int tooltipWidth = width + progressOffset;
+        int x = getTooltipX(mouseX, minecraft.getWindow().getGuiScaledWidth(), tooltipWidth);
         int y = getTooltipY(mouseY, minecraft.getWindow().getGuiScaledHeight());
         int bodyY = y + bodyYOffset;
 
-        TooltipRenderUtil.extractTooltipBackground(graphics, x, y, width, height, null);
+        TooltipRenderUtil.extractTooltipBackground(graphics, x, y, tooltipWidth, height, null);
 
-        graphics.text(minecraft.font, title, x, y, TEXT_COLOR, false);
+        graphics.text(minecraft.font, title, x, y, TITLE_COLOR, false);
 
         graphics.bannerPattern(
                 previewBannerType,
@@ -172,30 +184,52 @@ public class BannerRecipeTooltipProvider {
                 x + PREVIEW_WIDTH,
                 bodyY + PREVIEW_HEIGHT);
 
-        extractWeavingSteps(graphics, x, bodyY);
+        extractWeavingSteps(graphics, x, bodyY, currentProgress, progressOffset);
     }
 
-    private void extractWeavingSteps(GuiGraphicsExtractor graphics, int x, int y) {
+    private void extractWeavingSteps(
+            GuiGraphicsExtractor graphics, int x, int y, int currentProgress, int progressOffset) {
         int rowY = y;
 
         for (WeavingStep weavingStep : weavingSteps) {
-            graphics.fakeItem(weavingStep.item(), x + ITEM_X, rowY);
+            int stepIndex = weavingSteps.indexOf(weavingStep);
+            renderProgressMarker(graphics, x, rowY, stepIndex, currentProgress);
+
+            graphics.fakeItem(weavingStep.item(), x + ITEM_X + progressOffset, rowY);
 
             if (weavingStep.patternSprite() != null) {
-                renderPattern(graphics, weavingStep.patternSprite(), x + PATTERN_X, rowY);
+                renderPattern(graphics, weavingStep.patternSprite(), x + PATTERN_X + progressOffset, rowY);
             }
 
-            renderStepText(graphics, weavingStep, x, rowY);
+            renderStepText(graphics, weavingStep, x, rowY, currentProgress, progressOffset);
 
             rowY += ROW_HEIGHT;
         }
     }
 
-    private void renderStepText(GuiGraphicsExtractor graphics, WeavingStep weavingStep, int x, int y) {
-        int textY = y + TEXT_Y_OFFSET;
+    private void renderProgressMarker(GuiGraphicsExtractor graphics, int x, int y, int stepIndex, int currentProgress) {
+        if (currentProgress < 0) return;
 
-        graphics.text(minecraft.font, weavingStep.number(), x + NUMBER_X, textY, TEXT_COLOR, false);
-        graphics.text(minecraft.font, weavingStep.description(), x + DESCRIPTION_X, textY, TEXT_COLOR, false);
+        Component marker = getStepProgressMarker(stepIndex, currentProgress);
+        int color = getStepProgressColor(stepIndex, currentProgress);
+
+        graphics.text(minecraft.font, marker, x + ITEM_X + PROGRESS_MARKER_X_OFFSET, y + TEXT_Y_OFFSET, color, false);
+    }
+
+    private void renderStepText(
+            GuiGraphicsExtractor graphics,
+            WeavingStep weavingStep,
+            int x,
+            int y,
+            int currentProgress,
+            int progressOffset) {
+        int textY = y + TEXT_Y_OFFSET;
+        int textX = x + progressOffset;
+        int stepIndex = weavingSteps.indexOf(weavingStep);
+        int color = getStepProgressColor(stepIndex, currentProgress);
+
+        graphics.text(minecraft.font, weavingStep.number(), textX + NUMBER_X, textY, color, false);
+        graphics.text(minecraft.font, weavingStep.description(), textX + DESCRIPTION_X, textY, color, false);
     }
 
     private void renderPattern(GuiGraphicsExtractor graphics, SpriteId spriteId, int x, int y) {
@@ -218,14 +252,34 @@ public class BannerRecipeTooltipProvider {
         graphics.pose().popMatrix();
     }
 
+    private Component getStepProgressMarker(int stepIndex, int currentProgress) {
+        if (stepIndex <= currentProgress) {
+            return Component.literal("✔");
+        } else if (stepIndex == currentProgress + 1) {
+            return Component.literal("→");
+        } else {
+            return Component.empty();
+        }
+    }
+
+    private int getStepProgressColor(int stepIndex, int currentProgress) {
+        if (stepIndex <= currentProgress) {
+            return STEP_TEXT_COLOR_DONE;
+        } else if (stepIndex == currentProgress + 1) {
+            return STEP_TEXT_COLOR_CURRENT;
+        } else {
+            return STEP_TEXT_COLOR_DEFAULT;
+        }
+    }
+
     private int getTooltipY(int mouseY, int screenHeight) {
         int y = mouseY - TOOLTIP_Y_OFFSET;
         return y <= (screenHeight - height - TOOLTIP_BOTTOM_MARGIN) ? y : screenHeight - height - TOOLTIP_BOTTOM_MARGIN;
     }
 
-    private int getTooltipX(int mouseX, int screenWidth) {
+    private int getTooltipX(int mouseX, int screenWidth, int tooltipWidth) {
         int x = mouseX + TOOLTIP_X_OFFSET;
-        return x <= (screenWidth - width) ? x : Math.max(x - 24 - width, TOOLTIP_SCREEN_MARGIN);
+        return x <= (screenWidth - tooltipWidth) ? x : Math.max(x - 24 - tooltipWidth, TOOLTIP_SCREEN_MARGIN);
     }
 
     private record WeavingStep(ItemStack item, SpriteId patternSprite, Component number, Component description) {}

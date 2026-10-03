@@ -16,6 +16,7 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
     private RecipePanel recipePanel;
     private boolean panelVisible;
     private LoomScreenSidebar sidebar;
+    private WeavingGuideOverlay weavingGuide;
 
     public LoomScreenExtension(LoomScreen screen) {
         this.screen = screen;
@@ -29,6 +30,8 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
         // Always show the sidebar
         this.sidebar = new LoomScreenSidebar(screen);
         addWidget(sidebar);
+        this.weavingGuide = new WeavingGuideOverlay(screen);
+        addWidget(weavingGuide);
         super.init();
 
         RecipePanel recipePanel = new RecipePanel();
