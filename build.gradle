@@ -7,6 +7,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+    testImplementation "org.mockito:mockito-core:5.18.0"
 }
 
 ext.mod_version = "${project.mod_base_version}+${project.minecraft_version}"
@@ -45,6 +47,23 @@ java {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.release.set(java_version.toInteger())
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty "fabric.side", "client"
+
+    // Run tests in build/test-run to avoid polluting the project root with test artifacts
+    def testRunDir = layout.buildDirectory.dir("test-run")
+    doFirst {
+        delete testRunDir
+        testRunDir.get().asFile.mkdirs()
+    }
+    workingDir = testRunDir
+
+    testLogging {
+        events "passed", "failed", "skipped", "standardOut", "standardError"
+    }
 }
 
 spotless {
