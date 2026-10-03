@@ -6,4 +6,4 @@ package se.icus.mag.bannerrecipes.bannerpack.repo;
 
 import java.util.List;
 
-public record RemoteRepoIndex(int repoVersion, List<RemotePackEntry> packs) {}
+public record RemoteRepoIndex(int repoVersion, String generatedAt, String baseUrl, List<RemotePackEntry> packs) {}

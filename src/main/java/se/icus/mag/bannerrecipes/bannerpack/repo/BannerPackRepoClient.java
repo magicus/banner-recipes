@@ -44,6 +44,17 @@ public final class BannerPackRepoClient {
             RemoteRepoIndex index = GSON.fromJson(response.body(), RemoteRepoIndex.class);
             if (index == null || index.packs() == null) throw new IOException("Repository index has no packs list");
             if (index.repoVersion() != 1) throw new IOException("Unsupported repository index version");
+            if (index.packs().stream().anyMatch(pack -> pack == null)) {
+                throw new IOException("Repository index contains an empty pack entry");
+            }
+            if (index.packs().stream()
+                    .anyMatch(pack -> pack.id() == null
+                            || !pack.id().matches("[a-z0-9_-]+")
+                            || pack.downloadUrl() == null
+                            || pack.sha256() == null
+                            || !pack.sha256().matches("[0-9a-fA-F]{64}"))) {
+                throw new IOException("Repository index contains an invalid pack entry");
+            }
             return index;
         } catch (JsonSyntaxException e) {
             throw new IOException("Failed to parse banner-pack repository index", e);
