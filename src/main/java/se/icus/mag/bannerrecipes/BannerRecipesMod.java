@@ -6,9 +6,13 @@ package se.icus.mag.bannerrecipes;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.Holder;
@@ -25,9 +29,11 @@ import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.icus.mag.bannerrecipes.bannerpack.repo.BannerPackDownloadService;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeLayer;
+import se.icus.mag.bannerrecipes.storage.SelectedBannerPacks;
 import se.icus.mag.bannerrecipes.util.Lookup;
 
 public class BannerRecipesMod implements ClientModInitializer {
@@ -88,6 +94,30 @@ public class BannerRecipesMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         BannerRecipesMod.LOGGER.info("Initializing BannerRecipesMod");
+        SelectedBannerPacks selectedPacks = SelectedBannerPacks.getInstance();
+        selectedPacks.load();
+        CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return new BannerPackDownloadService(
+                                        FabricLoader.getInstance().getGameDir().resolve("bannerpacks"))
+                                .autoInstallDefaults();
+                    } catch (IOException e) {
+                        LOGGER.warn("Could not auto-install default banner packs", e);
+                        return List.<String>of();
+                    }
+                })
+                .thenAcceptAsync(
+                        installedPackIds -> {
+                            selectedPacks.load();
+                            if (Config.ACTIVATE_ON_DOWNLOAD) {
+                                installedPackIds.forEach(selectedPacks::selectPack);
+                            }
+                        },
+                        Minecraft.getInstance())
+                .exceptionally(e -> {
+                    LOGGER.error("Failed to reload banner packs after auto-install", e);
+                    return null;
+                });
     }
 
     public static BannerRecipesManager getManager() {

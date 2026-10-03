@@ -7,13 +7,12 @@ package se.icus.mag.bannerrecipes;
 import java.util.List;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
-import se.icus.mag.bannerrecipes.storage.LoomRecipeCategories;
 
 public class RecipePanelView {
     private static final int ITEMS_PER_PAGE = 20;
 
     private boolean panelOpen;
-    private BannerRecipeCategory activeCategory = LoomRecipeCategories.ALL;
+    private BannerRecipeCategory activeCategory = BannerRecipeCategory.ALL;
     private String searchText = "";
     private boolean filtering;
     private int totalPages;

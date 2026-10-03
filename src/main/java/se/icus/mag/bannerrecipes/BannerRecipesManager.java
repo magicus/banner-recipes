@@ -11,8 +11,7 @@ import se.icus.mag.bannerrecipes.gui.LoomScreenExtension;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
-import se.icus.mag.bannerrecipes.storage.LoomRecipeCategories;
-import se.icus.mag.bannerrecipes.storage.LoomRecipeDatabase;
+import se.icus.mag.bannerrecipes.storage.SelectedBannerPacks;
 import se.icus.mag.bannerrecipes.weaver.Weaver;
 import se.icus.mag.bannerrecipes.weaver.WeavingGuide;
 
@@ -30,12 +29,12 @@ public class BannerRecipesManager {
     }
 
     public List<BannerRecipeCategory> getCategories() {
-        return LoomRecipeCategories.TABS;
+        return SelectedBannerPacks.getInstance().getCategories();
     }
 
     public List<BannerRecipe> calculateVisibleRecipes(
             BannerRecipeCategory category, boolean isFiltering, String searchText) {
-        return LoomRecipeDatabase.recipesForCategory(category).stream()
+        return SelectedBannerPacks.getInstance().recipesForCategory(category).stream()
                 .filter(recipe -> searchText.isEmpty() || BannerRecipesMod.matchesSearch(recipe, searchText))
                 .filter(recipe -> !isFiltering || BannerRecipesMod.isCraftable(recipe))
                 .toList();
