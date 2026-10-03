@@ -97,7 +97,7 @@ public class RecipePanelPage {
             super(buttonLeftPos, buttonTopPos, BACKGROUND_SIZE, BACKGROUND_SIZE, CommonComponents.EMPTY);
             this.recipe = recipe;
             this.itemStack = BannerRecipesMod.getItemStack(recipe);
-            this.bannerRecipeTooltipProvider = new BannerRecipeTooltipProvider(recipe);
+            this.bannerRecipeTooltipProvider = BannerRecipeTooltipProvider.from(recipe);
             this.minecraft = Minecraft.getInstance();
         }
 

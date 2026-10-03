@@ -123,7 +123,7 @@ public class LoomScreenSidebar implements ScreenExtension {
         activeRecipe = BannerRecipesMod.getManager().getActiveRecipe();
         if (activeRecipe != null) {
             this.activeRecipeItemStack = BannerRecipesMod.getItemStack(activeRecipe);
-            this.activeRecipeTooltip = new BannerRecipeTooltipProvider(activeRecipe);
+            this.activeRecipeTooltip = BannerRecipeTooltipProvider.from(activeRecipe);
         } else {
             this.activeRecipeItemStack = null;
             this.activeRecipeTooltip = null;
