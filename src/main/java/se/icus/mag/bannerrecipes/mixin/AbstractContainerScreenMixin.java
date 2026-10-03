@@ -37,7 +37,6 @@ public abstract class AbstractContainerScreenMixin {
         extension.tick();
     }
 
-
     @Inject(method = "extractTooltip", at = @At("HEAD"), cancellable = true)
     private void onExtractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
         if (!((Object) this instanceof LoomScreen)) return;
