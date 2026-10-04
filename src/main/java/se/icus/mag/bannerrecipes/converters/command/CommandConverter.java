@@ -67,8 +67,32 @@ public class CommandConverter {
             return new CommandParseResult(null, "Invalid syntax", null);
         }
 
+        int componentIndex = working.indexOf('[');
+        if (componentIndex >= 0) {
+            String itemName = itemToken(working.substring(0, componentIndex));
+            int componentEnd = working.lastIndexOf(']');
+            if (componentEnd > componentIndex) {
+                BannerRecipe recipe =
+                        parseModernComponentCommand(itemName, working.substring(componentIndex + 1, componentEnd));
+                if (recipe != null) {
+                    return new CommandParseResult(recipe, null, null);
+                }
+            }
+        }
+
         int braceIndex = working.indexOf('{');
         if (braceIndex >= 0) {
+            String prefix = working.substring(0, braceIndex).trim();
+            String itemName = itemToken(prefix);
+            if (!itemName.isEmpty()) {
+                CommandStyle style = itemName.equals("banner") || itemName.equals("minecraft:banner")
+                        ? CommandStyle.STYLE_1_8
+                        : CommandStyle.STYLE_1_13;
+                BannerRecipe legacy = parseLegacyItemCommand(itemName, prefix, working.substring(braceIndex), style);
+                if (legacy != null) {
+                    return new CommandParseResult(legacy, null, null);
+                }
+            }
             return parseModernCommand(working.substring(braceIndex), prefixOffset + braceIndex);
         }
 
@@ -78,6 +102,35 @@ public class CommandConverter {
         }
 
         return new CommandParseResult(null, "Invalid syntax", null);
+    }
+
+    private static String lastToken(String value) {
+        String trimmed = value.trim();
+        int separator = trimmed.lastIndexOf(' ');
+        return separator >= 0 ? trimmed.substring(separator + 1) : trimmed;
+    }
+
+    private static String itemToken(String value) {
+        String[] tokens = value.trim().split("\\s+");
+        for (String token : tokens) {
+            if (token.equals("banner") || token.equals("minecraft:banner") || token.endsWith("_banner")) {
+                return token;
+            }
+        }
+        return lastToken(value);
+    }
+
+    private static BannerRecipe parseModernComponentCommand(String itemName, String componentText) {
+        if (itemName.isEmpty() || componentText == null) return null;
+
+        String patterns = findTopLevelFieldValue(componentText, "minecraft:banner_patterns");
+        if (patterns == null) {
+            patterns = findTopLevelFieldValue(componentText, "banner_patterns");
+        }
+        if (patterns == null) return null;
+
+        String syntheticItem = "{id:" + itemName + ",components:{banner_patterns:" + patterns + "}}";
+        return parseModernCommandManually(syntheticItem);
     }
 
     private static CommandParseResult parseModernCommand(String objectText, int offset) {
@@ -292,11 +345,14 @@ public class CommandConverter {
             if ((c == ',' && braceDepth == 0 && bracketDepth == 0) || i == body.length()) {
                 String segment = body.substring(segmentStart, i).trim();
                 if (!segment.isEmpty()) {
-                    int colon = segment.indexOf(':');
-                    if (colon > 0) {
-                        String segmentKey = segment.substring(0, colon).trim();
+                    int separator = segment.indexOf('=');
+                    if (separator < 0) {
+                        separator = segment.indexOf(':');
+                    }
+                    if (separator > 0) {
+                        String segmentKey = segment.substring(0, separator).trim();
                         if (segmentKey.equals(key)) {
-                            return segment.substring(colon + 1).trim();
+                            return segment.substring(separator + 1).trim();
                         }
                     }
                 }
@@ -339,6 +395,78 @@ public class CommandConverter {
 
         return new BannerRecipe(
                 null, DEFAULT_DESCRIPTION, null, null, DEFAULT_CATEGORY, baseColor.getName(), parsedLayers);
+    }
+
+    private static BannerRecipe parseLegacyItemCommand(
+            String itemName, String prefix, String tagText, CommandStyle style) {
+        DyeColor baseColor = style == CommandStyle.STYLE_1_8 ? null : parseBannerColor(itemName);
+        if (style != CommandStyle.STYLE_1_8 && baseColor == null) return null;
+
+        try {
+            CompoundTag itemTag = TagParser.parseCompoundFully(tagText);
+            CompoundTag blockEntityTag = itemTag.getCompound("BlockEntityTag").orElse(null);
+            if (blockEntityTag == null) return null;
+
+            if (style == CommandStyle.STYLE_1_8) {
+                Integer baseId = blockEntityTag.getInt("Base").orElse(null);
+                baseColor = baseId == null ? legacyDamageColor(prefix) : DyeColor.byId(baseId);
+                if (baseColor == null) return null;
+            }
+
+            List<BannerRecipeLayer> parsedLayers = parseLegacyPatterns(blockEntityTag, style);
+            if (parsedLayers == null) return null;
+
+            return new BannerRecipe(
+                    null, DEFAULT_DESCRIPTION, null, null, DEFAULT_CATEGORY, baseColor.getName(), parsedLayers);
+        } catch (CommandSyntaxException | IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private static List<BannerRecipeLayer> parseLegacyPatterns(CompoundTag blockEntityTag, CommandStyle style) {
+        List<BannerRecipeLayer> parsedLayers = new ArrayList<>();
+        ListTag bannerPatterns = blockEntityTag.getListOrEmpty("Patterns");
+        for (int i = 0; i < bannerPatterns.size(); i++) {
+            CompoundTag layerTag = bannerPatterns.getCompound(i).orElse(null);
+            if (layerTag == null) return null;
+
+            String patternCode = layerTag.getString("Pattern").orElse(null);
+            if (patternCode == null) return null;
+
+            String colorName = legacyColorName(layerTag, style);
+            if (colorName == null) return null;
+
+            parsedLayers.add(BannerRecipeLayer.of(LegacyBannerPatterns.getPatternId(patternCode), colorName));
+        }
+
+        return parsedLayers;
+    }
+
+    private static DyeColor legacyDamageColor(String prefix) {
+        String[] tokens = prefix.trim().split("\\s+");
+        for (int i = 0; i < tokens.length; i++) {
+            if (!(tokens[i].equals("banner") || tokens[i].equals("minecraft:banner"))) continue;
+            if (i + 2 >= tokens.length) return null;
+
+            try {
+                return DyeColor.byId(15 - Integer.parseInt(tokens[i + 2]));
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private static String legacyColorName(CompoundTag layerTag, CommandStyle style) {
+        Integer colorId = layerTag.getInt("Color").orElse(null);
+        if (colorId == null) {
+            Byte colorByte = layerTag.getByte("Color").orElse(null);
+            colorId = colorByte == null ? null : (int) colorByte;
+        }
+        if (colorId == null || colorId < 0 || colorId >= 16) return null;
+
+        return DyeColor.byId(style == CommandStyle.STYLE_1_8 ? 15 - colorId : colorId)
+                .getName();
     }
 
     private static DyeColor parseBannerColor(String itemId) {
@@ -430,6 +558,12 @@ public class CommandConverter {
         if (value == null) return "";
 
         return value.startsWith("minecraft:") ? value.substring("minecraft:".length()) : value;
+    }
+
+    private enum CommandStyle {
+        STYLE_1_8,
+        STYLE_1_13,
+        STYLE_1_20_5
     }
 
     public record CommandParseResult(BannerRecipe recipe, String errorMessage, Integer errorPosition) {}
