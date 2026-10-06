@@ -19,7 +19,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import se.icus.mag.bannerrecipes.converters.command.CommandConverter;
-import se.icus.mag.bannerrecipes.converters.command.CommandConverter.CommandParseResult;
+import se.icus.mag.bannerrecipes.converters.command.CommandParseResult;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeLayer;
 

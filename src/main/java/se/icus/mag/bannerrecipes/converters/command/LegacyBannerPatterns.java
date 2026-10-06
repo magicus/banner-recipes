@@ -6,54 +6,62 @@ package se.icus.mag.bannerrecipes.converters.command;
 
 import java.util.Map;
 
+/**
+ * Complete legacy short-code table; unknown codes must not silently disappear.
+ */
 final class LegacyBannerPatterns {
     private static final Map<String, String> PATTERN_IDS = Map.ofEntries(
-            Map.entry("bs", "minecraft:stripe_bottom"),
-            Map.entry("ts", "minecraft:stripe_top"),
-            Map.entry("ls", "minecraft:stripe_left"),
-            Map.entry("rs", "minecraft:stripe_right"),
-            Map.entry("cs", "minecraft:stripe_center"),
-            Map.entry("ms", "minecraft:stripe_middle"),
-            Map.entry("drs", "minecraft:stripe_downright"),
-            Map.entry("dls", "minecraft:stripe_downleft"),
-            Map.entry("ss", "minecraft:small_stripes"),
-            Map.entry("cr", "minecraft:cross"),
-            Map.entry("sc", "minecraft:straight_cross"),
-            Map.entry("ld", "minecraft:diagonal_left"),
-            Map.entry("rud", "minecraft:diagonal_right"),
-            Map.entry("lud", "minecraft:diagonal_up_left"),
-            Map.entry("rd", "minecraft:diagonal_up_right"),
-            Map.entry("vh", "minecraft:half_vertical"),
-            Map.entry("vhr", "minecraft:half_vertical_right"),
-            Map.entry("hh", "minecraft:half_horizontal"),
-            Map.entry("hhb", "minecraft:half_horizontal_bottom"),
-            Map.entry("bl", "minecraft:square_bottom_left"),
-            Map.entry("br", "minecraft:square_bottom_right"),
-            Map.entry("tl", "minecraft:square_top_left"),
-            Map.entry("tr", "minecraft:square_top_right"),
-            Map.entry("bt", "minecraft:triangle_bottom"),
-            Map.entry("tt", "minecraft:triangle_top"),
-            Map.entry("bts", "minecraft:triangles_bottom"),
-            Map.entry("tts", "minecraft:triangles_top"),
-            Map.entry("mc", "minecraft:circle"),
-            Map.entry("mr", "minecraft:rhombus"),
-            Map.entry("bo", "minecraft:border"),
-            Map.entry("cbo", "minecraft:curly_border"),
-            Map.entry("bri", "minecraft:bricks"),
-            Map.entry("gra", "minecraft:gradient"),
-            Map.entry("gru", "minecraft:gradient_up"),
-            Map.entry("cre", "minecraft:creeper"),
-            Map.entry("sku", "minecraft:skull"),
-            Map.entry("flo", "minecraft:flower"),
-            Map.entry("moj", "minecraft:mojang"),
-            Map.entry("glb", "minecraft:globe"),
-            Map.entry("pig", "minecraft:piglin"),
-            Map.entry("flow", "minecraft:flow"),
-            Map.entry("guster", "minecraft:guster"));
+            Map.entry("b", "base"),
+            Map.entry("bl", "square_bottom_left"),
+            Map.entry("bo", "border"),
+            Map.entry("br", "square_bottom_right"),
+            Map.entry("bri", "bricks"),
+            Map.entry("bs", "stripe_bottom"),
+            Map.entry("bt", "triangle_bottom"),
+            Map.entry("bts", "triangles_bottom"),
+            Map.entry("cbo", "curly_border"),
+            Map.entry("cr", "cross"),
+            Map.entry("cre", "creeper"),
+            Map.entry("cs", "stripe_center"),
+            Map.entry("dls", "stripe_downleft"),
+            Map.entry("drs", "stripe_downright"),
+            Map.entry("flo", "flower"),
+            Map.entry("flow", "flow"),
+            Map.entry("glb", "globe"),
+            Map.entry("gra", "gradient"),
+            Map.entry("gru", "gradient_up"),
+            Map.entry("guster", "guster"),
+            Map.entry("hh", "half_horizontal"),
+            Map.entry("hhb", "half_horizontal_bottom"),
+            Map.entry("ld", "diagonal_left"),
+            Map.entry("ls", "stripe_left"),
+            Map.entry("lud", "diagonal_up_left"),
+            Map.entry("mc", "circle"),
+            Map.entry("moj", "mojang"),
+            Map.entry("mr", "rhombus"),
+            Map.entry("ms", "stripe_middle"),
+            Map.entry("pig", "piglin"),
+            Map.entry("rd", "diagonal_up_right"),
+            Map.entry("rs", "stripe_right"),
+            Map.entry("rud", "diagonal_right"),
+            Map.entry("sc", "straight_cross"),
+            Map.entry("sku", "skull"),
+            Map.entry("ss", "small_stripes"),
+            Map.entry("tl", "square_top_left"),
+            Map.entry("tr", "square_top_right"),
+            Map.entry("ts", "stripe_top"),
+            Map.entry("tt", "triangle_top"),
+            Map.entry("tts", "triangles_top"),
+            Map.entry("vh", "half_vertical"),
+            Map.entry("vhr", "half_vertical_right"));
 
-    private LegacyBannerPatterns() {}
+    static String id(String code, int position) {
+        String baseId = PATTERN_IDS.get(code);
+        if (baseId == null) {
+            // If the pattern code is not found in the map, return a default value
+            throw new ParseFailure("Unknown legacy banner pattern: " + code, position);
+        }
 
-    static String getPatternId(String patternCode) {
-        return PATTERN_IDS.getOrDefault(patternCode, "minecraft:" + patternCode);
+        return "minecraft:" + baseId;
     }
 }
