@@ -143,7 +143,7 @@ public final class BannerPackDownloadService {
                         throw new CompletionException(e);
                     }
                     this.registry.remove(packId);
-                    SelectedBannerPacks.getInstance().load();
+                    SelectedBannerPacks.getInstance().reload();
                 },
                 Util.ioPool());
     }

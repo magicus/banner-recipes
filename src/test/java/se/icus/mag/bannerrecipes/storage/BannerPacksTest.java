@@ -131,7 +131,7 @@ class BannerPacksTest {
         Path config = gameDir.resolve("config/banner-recipes");
 
         SelectedBannerPacks selected = new SelectedBannerPacks(packs, config);
-        selected.load();
+        selected.reload();
 
         assertEquals(List.of("local"), selected.getSelectedPackIds());
         assertTrue(selected.getRecipes().isEmpty());
@@ -146,7 +146,7 @@ class BannerPacksTest {
                 .anyMatch(category -> category.id().equals("numbers")));
 
         SelectedBannerPacks restartedStorage = new SelectedBannerPacks(packs, config);
-        restartedStorage.load();
+        restartedStorage.reload();
         assertEquals("numbers:0", restartedStorage.getRecipes().getFirst().id());
     }
 
@@ -161,7 +161,7 @@ class BannerPacksTest {
                 """);
 
         SelectedBannerPacks selected = new SelectedBannerPacks(packs, config.getParent());
-        selected.load();
+        selected.reload();
 
         assertEquals(List.of("local", "numbers"), selected.getSelectedPackIds());
         assertEquals("""

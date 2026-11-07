@@ -230,7 +230,7 @@ public final class BannerPackDownloadManagementScreen extends Screen {
                                         .getString();
                             } else {
                                 SelectedBannerPacks selectedPacks = SelectedBannerPacks.getInstance();
-                                selectedPacks.load();
+                                selectedPacks.reload();
                                 if (this.activateAfterDownload)
                                     selectedPacks.selectPack(
                                             BannerPackId.of(target.remoteEntry().id()));

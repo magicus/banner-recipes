@@ -97,7 +97,7 @@ public class BannerRecipesMod implements ClientModInitializer {
     public void onInitializeClient() {
         BannerRecipesMod.LOGGER.info("Initializing BannerRecipesMod");
         SelectedBannerPacks selectedPacks = SelectedBannerPacks.getInstance();
-        selectedPacks.load();
+        selectedPacks.reload();
         CompletableFuture.supplyAsync(() -> {
                     try {
                         return new BannerPackDownloadService(
@@ -110,7 +110,7 @@ public class BannerRecipesMod implements ClientModInitializer {
                 })
                 .thenAcceptAsync(
                         installedPackIds -> {
-                            selectedPacks.load();
+                            selectedPacks.reload();
                             if (Config.ACTIVATE_ON_DOWNLOAD) {
                                 installedPackIds.forEach(p -> selectedPacks.selectPack(p));
                             }

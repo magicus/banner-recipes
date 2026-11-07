@@ -68,12 +68,12 @@ public final class BannerPackSelectionScreen extends Screen {
         super(Component.literal("Select Banner Packs"));
         this.parentScreen = parentScreen;
         this.selectedPacks = SelectedBannerPacks.getInstance();
-        this.selectedPacks.load();
+        this.selectedPacks.reload();
     }
 
     @Override
     public void onClose() {
-        this.selectedPacks.load();
+        this.selectedPacks.reload();
         this.minecraft.gui.setScreen(this.parentScreen);
     }
 
@@ -192,7 +192,7 @@ public final class BannerPackSelectionScreen extends Screen {
     }
 
     public void refreshFromStorage() {
-        this.selectedPacks.load();
+        this.selectedPacks.reload();
         this.reload();
     }
 

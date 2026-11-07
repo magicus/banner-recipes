@@ -39,7 +39,7 @@ public final class SelectedBannerPacks {
         return INSTANCE;
     }
 
-    public synchronized void load() {
+    public synchronized void reload() {
         availablePacks = new AvailableBannerPacks(packsRoot);
         availablePacks.load();
         if (selectedPacksConfig == null) selectedPacksConfig = new SelectedPacksConfig(configDir);
@@ -101,7 +101,7 @@ public final class SelectedBannerPacks {
 
     public synchronized BannerRecipe addLocalRecipe(BannerRecipe recipe) {
         BannerRecipe added = getAvailablePacks().addBannerRecipe(AvailableBannerPacks.LOCAL_PACK_ID, recipe);
-        load();
+        reload();
         return added;
     }
 
@@ -149,6 +149,6 @@ public final class SelectedBannerPacks {
     }
 
     private void ensureLoaded() {
-        if (availablePacks == null) load();
+        if (availablePacks == null) reload();
     }
 }
