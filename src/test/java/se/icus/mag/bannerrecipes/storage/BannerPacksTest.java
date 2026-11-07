@@ -50,14 +50,14 @@ class BannerPacksTest {
         assertEquals(
                 List.of("letters", "local", "numbers"),
                 availablePacks.getAvailablePacks().keySet().stream().toList());
-        assertNotNull(availablePacks.getAvailablePack("local"));
+        assertNotNull(availablePacks.getAvailablePack(BannerPackId.of("local")));
         assertEquals(
                 "letters:a", availablePacks.getBannerRecipeById("letters:a").id());
         assertEquals("letters", availablePacks.getBannerRecipePackId("letters:a"));
         assertEquals(
                 "Letters",
                 availablePacks
-                        .getAvailablePack("letters")
+                        .getAvailablePack(BannerPackId.of("letters"))
                         .getCategories()
                         .getFirst()
                         .description());
@@ -66,12 +66,15 @@ class BannerPacksTest {
         assertEquals(
                 "Siffror",
                 availablePacks
-                        .getAvailablePack("numbers")
+                        .getAvailablePack(BannerPackId.of("numbers"))
                         .getCategoryTranslations()
                         .get("sv_se")
                         .get("numbers"));
-        assertTrue(availablePacks.getAvailablePack("numbers").getCategories().isEmpty());
-        assertTrue(availablePacks.getAvailablePack("numbers").isReadOnly());
+        assertTrue(availablePacks
+                .getAvailablePack(BannerPackId.of("numbers"))
+                .getCategories()
+                .isEmpty());
+        assertTrue(availablePacks.getAvailablePack(BannerPackId.of("numbers")).isReadOnly());
     }
 
     @Test
@@ -87,11 +90,14 @@ class BannerPacksTest {
                 "misc",
                 "white",
                 List.of(BannerRecipeLayer.of("minecraft:stripe_top", "red")));
-        BannerRecipe localRecipe = availablePacks.addBannerRecipe("local", recipe);
+
+        BannerRecipe localRecipe = availablePacks.addBannerRecipe(BannerPackId.of("local"), recipe);
         assertTrue(localRecipe.id().startsWith("local:"));
         assertEquals("local", availablePacks.getBannerRecipePackId(localRecipe.id()));
 
-        BannerRecipe namedRecipe = availablePacks.addBannerRecipe("local", recipe.withId("my-design"));
+        BannerRecipe recipe1 = recipe.withId("my-design");
+
+        BannerRecipe namedRecipe = availablePacks.addBannerRecipe(BannerPackId.of("local"), recipe1);
         assertEquals("local:my-design", namedRecipe.id());
         availablePacks.load();
         assertNotNull(availablePacks.getBannerRecipeById(localRecipe.id()));
@@ -108,11 +114,14 @@ class BannerPacksTest {
         AvailableBannerPacks availablePacks = new AvailableBannerPacks(packs);
         availablePacks.load();
 
-        assertThrows(
-                IllegalStateException.class,
-                () -> availablePacks.addBannerRecipe(
-                        "numbers", new BannerRecipe(null, "Nope", null, null, "misc", "white", List.of())));
-        assertFalse(availablePacks.getAvailablePack("numbers").getDesigns().isEmpty());
+        assertThrows(IllegalStateException.class, () -> {
+            BannerRecipe recipe = new BannerRecipe(null, "Nope", null, null, "misc", "white", List.of());
+            availablePacks.addBannerRecipe(BannerPackId.of("numbers"), recipe);
+        });
+        assertFalse(availablePacks
+                .getAvailablePack(BannerPackId.of("numbers"))
+                .getDesigns()
+                .isEmpty());
     }
 
     @Test
@@ -130,7 +139,7 @@ class BannerPacksTest {
                 List.of("all"),
                 selected.getCategories().stream().map(BannerRecipeCategory::id).toList());
 
-        selected.selectPack("numbers");
+        selected.selectPack(BannerPackId.of("numbers"));
         assertEquals(List.of("local", "numbers"), selected.getSelectedPackIds());
         assertEquals("numbers:0", selected.getRecipes().getFirst().id());
         assertTrue(selected.getCategories().stream()

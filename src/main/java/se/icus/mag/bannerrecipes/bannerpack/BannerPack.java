@@ -30,6 +30,7 @@ import net.minecraft.world.item.DyeColor;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeLayer;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 
 public abstract class BannerPack {
     public static final String MCMETA_FILE = "bannerpack.mcmeta";
@@ -111,7 +112,7 @@ public abstract class BannerPack {
         return new DirectoryBannerPack(metadata, packDir);
     }
 
-    public static DirectoryBannerPack loadDirectoryPack(Path packDir, String packId) throws IOException {
+    public static DirectoryBannerPack loadDirectoryPack(Path packDir, BannerPackId packId) throws IOException {
         BannerPackMetadata metadata = readMcmeta(packDir.resolve(MCMETA_FILE), packId);
         if (metadata == null) return null;
         return new DirectoryBannerPack(
@@ -122,7 +123,7 @@ public abstract class BannerPack {
                 packDir.resolve(CATEGORIES_DIR).resolve("lang"));
     }
 
-    public static ZipBannerPack loadZipPack(Path zipPath, String packId) throws IOException {
+    public static ZipBannerPack loadZipPack(Path zipPath, BannerPackId packId) throws IOException {
         try (FileSystem fileSystem = FileSystems.newFileSystem(zipPath, (ClassLoader) null)) {
             Path root = fileSystem.getPath("/");
             BannerPackMetadata metadata = readMcmeta(root.resolve(MCMETA_FILE), packId);
@@ -154,7 +155,7 @@ public abstract class BannerPack {
         }
     }
 
-    private static BannerPackMetadata readMcmeta(Path path, String packId) throws IOException {
+    private static BannerPackMetadata readMcmeta(Path path, BannerPackId packId) throws IOException {
         if (!Files.exists(path)) return null;
         try (Reader reader = Files.newBufferedReader(path)) {
             JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();

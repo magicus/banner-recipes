@@ -5,7 +5,8 @@
 package se.icus.mag.bannerrecipes.gui.screens.packselection;
 
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 
 public abstract class BannerPackListEntry extends ObjectSelectionList.Entry<BannerPackListEntry> {
-    protected abstract String getPackId();
+    protected abstract BannerPackId getPackId();
 }

@@ -22,14 +22,14 @@ public final class SelectedPacksConfig {
     private static final String CONFIG_FILE_NAME = "bannerpacks.json";
 
     private final Path configFile;
-    private List<String> selectedPacks;
+    private List<BannerPackId> selectedPacks;
 
     public SelectedPacksConfig(Path configDir) {
         this.configFile = configDir.resolve(CONFIG_FILE_NAME);
         load();
     }
 
-    public List<String> getSelectedPacks() {
+    public List<BannerPackId> getSelectedPacks() {
         return List.copyOf(selectedPacks);
     }
 
@@ -37,11 +37,11 @@ public final class SelectedPacksConfig {
         return selectedPacks.contains(packId);
     }
 
-    public void setSelectedPacks(List<String> packIds) {
-        LinkedHashSet<String> normalized = new LinkedHashSet<>();
+    public void setSelectedPacks(List<BannerPackId> packIds) {
+        LinkedHashSet<BannerPackId> normalized = new LinkedHashSet<>();
         normalized.add(AvailableBannerPacks.LOCAL_PACK_ID);
-        for (String packId : packIds) {
-            if (packId == null || packId.isBlank()) {
+        for (BannerPackId packId : packIds) {
+            if (packId == null || packId.id().isBlank()) {
                 throw new IllegalArgumentException("selected pack IDs cannot be empty");
             }
             normalized.add(packId);
@@ -50,23 +50,23 @@ public final class SelectedPacksConfig {
         save();
     }
 
-    public void selectPack(String packId) {
-        if (packId == null || packId.isBlank()) throw new IllegalArgumentException("pack ID cannot be empty");
+    public void selectPack(BannerPackId packId) {
+        if (packId == null || packId.id().isBlank()) throw new IllegalArgumentException("pack ID cannot be empty");
         if (!selectedPacks.contains(packId)) {
             selectedPacks.add(packId);
             save();
         }
     }
 
-    public void deselectPack(String packId) {
+    public void deselectPack(BannerPackId packId) {
         if (AvailableBannerPacks.LOCAL_PACK_ID.equals(packId)) {
             throw new IllegalArgumentException("the local pack cannot be deselected");
         }
         if (selectedPacks.remove(packId)) save();
     }
 
-    public void removeUnavailableSelections(Set<String> availablePackIds) {
-        List<String> retained = selectedPacks.stream()
+    public void removeUnavailableSelections(Set<BannerPackId> availablePackIds) {
+        List<BannerPackId> retained = selectedPacks.stream()
                 .filter(packId ->
                         AvailableBannerPacks.LOCAL_PACK_ID.equals(packId) || availablePackIds.contains(packId))
                 .toList();
@@ -84,11 +84,12 @@ public final class SelectedPacksConfig {
         }
         try {
             ConfigData data = GSON.fromJson(Files.readString(configFile, StandardCharsets.UTF_8), ConfigData.class);
-            List<String> configuredIds = data == null || data.selectedPacks == null ? List.of() : data.selectedPacks;
-            LinkedHashSet<String> normalized = new LinkedHashSet<>();
+            List<BannerPackId> configuredIds =
+                    data == null || data.selectedPacks == null ? List.of() : data.asBannerPackIds();
+            LinkedHashSet<BannerPackId> normalized = new LinkedHashSet<>();
             normalized.add(AvailableBannerPacks.LOCAL_PACK_ID);
-            for (String packId : configuredIds) {
-                if (packId == null || packId.isBlank()) {
+            for (BannerPackId packId : configuredIds) {
+                if (packId == null || packId.id().isBlank()) {
                     throw new IllegalArgumentException("selected pack IDs cannot be empty: " + configFile);
                 }
                 normalized.add(packId);
@@ -104,7 +105,8 @@ public final class SelectedPacksConfig {
         try {
             Files.createDirectories(configFile.getParent());
             Path temporaryFile = configFile.resolveSibling(CONFIG_FILE_NAME + ".tmp");
-            Files.writeString(temporaryFile, GSON.toJson(new ConfigData(selectedPacks)), StandardCharsets.UTF_8);
+            Files.writeString(
+                    temporaryFile, GSON.toJson(ConfigData.fromBannerPackIds(selectedPacks)), StandardCharsets.UTF_8);
             try {
                 Files.move(
                         temporaryFile, configFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
@@ -116,5 +118,13 @@ public final class SelectedPacksConfig {
         }
     }
 
-    private record ConfigData(List<String> selectedPacks) {}
+    private record ConfigData(List<String> selectedPacks) {
+        public List<BannerPackId> asBannerPackIds() {
+            return selectedPacks.stream().map(s -> BannerPackId.of(s)).toList();
+        }
+
+        public static ConfigData fromBannerPackIds(List<BannerPackId> list) {
+            return new ConfigData(list.stream().map(p -> p.id()).toList());
+        }
+    }
 }

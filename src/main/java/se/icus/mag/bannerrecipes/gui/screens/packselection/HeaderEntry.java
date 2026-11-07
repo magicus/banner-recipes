@@ -7,6 +7,7 @@ package se.icus.mag.bannerrecipes.gui.screens.packselection;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 
 public final class HeaderEntry extends BannerPackListEntry {
     private final Font font;
@@ -29,7 +30,7 @@ public final class HeaderEntry extends BannerPackListEntry {
     }
 
     @Override
-    public String getPackId() {
-        return "";
+    public BannerPackId getPackId() {
+        return BannerPackId.of("");
     }
 }

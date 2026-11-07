@@ -35,6 +35,7 @@ import se.icus.mag.bannerrecipes.bannerpack.repo.InstallResult;
 import se.icus.mag.bannerrecipes.bannerpack.repo.PackUpdateStatus;
 import se.icus.mag.bannerrecipes.bannerpack.repo.RemoteRepoIndex;
 import se.icus.mag.bannerrecipes.gui.screens.packselection.BannerPackSelectionScreen;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 import se.icus.mag.bannerrecipes.storage.SelectedBannerPacks;
 
 public final class BannerPackDownloadManagementScreen extends Screen {
@@ -232,7 +233,7 @@ public final class BannerPackDownloadManagementScreen extends Screen {
                                 selectedPacks.load();
                                 if (this.activateAfterDownload)
                                     selectedPacks.selectPack(
-                                            target.remoteEntry().id());
+                                            BannerPackId.of(target.remoteEntry().id()));
                                 this.refreshStatuses();
                             }
                             this.reload();

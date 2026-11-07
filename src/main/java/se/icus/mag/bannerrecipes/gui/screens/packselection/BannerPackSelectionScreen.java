@@ -37,6 +37,7 @@ import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.bannerpack.BannerPack;
 import se.icus.mag.bannerrecipes.gui.screens.packdownload.BannerPackDownloadManagementScreen;
 import se.icus.mag.bannerrecipes.storage.AvailableBannerPacks;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 import se.icus.mag.bannerrecipes.storage.SelectedBannerPacks;
 
 public final class BannerPackSelectionScreen extends Screen {
@@ -56,7 +57,7 @@ public final class BannerPackSelectionScreen extends Screen {
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     private final SelectedBannerPacks selectedPacks;
     private final Screen parentScreen;
-    private final Map<String, Identifier> packIcons = new HashMap<>();
+    private final Map<BannerPackId, Identifier> packIcons = new HashMap<>();
 
     private BannerPackListWidget availablePackList;
     private BannerPackListWidget selectedPackList;
@@ -134,13 +135,13 @@ public final class BannerPackSelectionScreen extends Screen {
 
     private boolean matchesFilter(BannerPackModelEntry entry, String value, String lowerCaseValue) {
         return value.isBlank()
-                || entry.packId().toLowerCase(Locale.ROOT).contains(lowerCaseValue)
+                || entry.packId().id().toLowerCase(Locale.ROOT).contains(lowerCaseValue)
                 || entry.title().toLowerCase(Locale.ROOT).contains(lowerCaseValue)
                 || entry.description().getString().toLowerCase(Locale.ROOT).contains(lowerCaseValue);
     }
 
     private BannerPackModelEntry toEntry(BannerPack pack, boolean selected) {
-        String packId = pack.getMetadata().id();
+        BannerPackId packId = pack.getMetadata().id();
         return new BannerPackModelEntry(
                 packId, displayName(pack), description(pack), secondLine(pack), this.getPackIcon(pack), selected);
     }
@@ -157,12 +158,12 @@ public final class BannerPackSelectionScreen extends Screen {
 
     private static String displayName(BannerPack pack) {
         Path fileName = pack.getPath().getFileName();
-        if (fileName == null) return pack.getMetadata().id();
+        if (fileName == null) return pack.getMetadata().id().id();
         String name = fileName.toString();
         return name.toLowerCase(Locale.ROOT).endsWith(".zip") ? name.substring(0, name.length() - 4) : name;
     }
 
-    private boolean isPackSelected(String packId) {
+    private boolean isPackSelected(BannerPackId packId) {
         return this.selectedPacks.getSelectedPackIds().contains(packId);
     }
 
@@ -195,12 +196,12 @@ public final class BannerPackSelectionScreen extends Screen {
         this.reload();
     }
 
-    public void movePackToSelected(String packId) {
+    public void movePackToSelected(BannerPackId packId) {
         if (!this.isPackSelected(packId)) this.selectedPacks.selectPack(packId);
         this.reload();
     }
 
-    public void movePackToAvailable(String packId) {
+    public void movePackToAvailable(BannerPackId packId) {
         if (AvailableBannerPacks.LOCAL_PACK_ID.equals(packId)) return;
         this.selectedPacks.deselectPack(packId);
         this.reload();
@@ -231,7 +232,7 @@ public final class BannerPackSelectionScreen extends Screen {
         this.refreshFromStorage();
     }
 
-    private Map<String, BannerPack> getAvailablePacks() {
+    private Map<BannerPackId, BannerPack> getAvailablePacks() {
         return this.selectedPacks.getAvailablePacks().getAvailablePacks();
     }
 
@@ -285,7 +286,7 @@ public final class BannerPackSelectionScreen extends Screen {
 
     private Identifier loadIconTexture(BannerPack pack, Path iconPath) throws IOException {
         if (!Files.exists(iconPath)) return DEFAULT_ICON;
-        String id = Util.sanitizeName(pack.getMetadata().id(), Identifier::validPathChar);
+        String id = Util.sanitizeName(pack.getMetadata().id().id(), Identifier::validPathChar);
         Identifier location = Identifier.withDefaultNamespace("pack/" + id + "/icon");
         try (InputStream stream = Files.newInputStream(iconPath)) {
             NativeImage iconImage = NativeImage.read(stream);

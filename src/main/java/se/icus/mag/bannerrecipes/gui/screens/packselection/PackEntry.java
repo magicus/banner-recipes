@@ -17,6 +17,7 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import se.icus.mag.bannerrecipes.storage.AvailableBannerPacks;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 
 public final class PackEntry extends BannerPackListEntry implements SelectableEntry {
     private static final Identifier UNSELECT_HIGHLIGHTED_SPRITE =
@@ -126,7 +127,7 @@ public final class PackEntry extends BannerPackListEntry implements SelectableEn
     }
 
     @Override
-    public String getPackId() {
+    public BannerPackId getPackId() {
         return this.pack.packId();
     }
 

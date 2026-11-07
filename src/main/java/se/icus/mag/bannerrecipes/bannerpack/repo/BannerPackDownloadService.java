@@ -24,6 +24,7 @@ import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.Config;
 import se.icus.mag.bannerrecipes.bannerpack.BannerPack;
 import se.icus.mag.bannerrecipes.storage.AvailableBannerPacks;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 import se.icus.mag.bannerrecipes.storage.InstalledPackRegistry;
 import se.icus.mag.bannerrecipes.storage.InstalledPackState;
 import se.icus.mag.bannerrecipes.storage.SelectedBannerPacks;
@@ -63,7 +64,7 @@ public final class BannerPackDownloadService {
             if (installed == null) {
                 AvailableBannerPacks available =
                         SelectedBannerPacks.getInstance().getAvailablePacks();
-                boolean existsUnmanaged = available.getAvailablePack(entry.id()) != null
+                boolean existsUnmanaged = available.getAvailablePack(BannerPackId.of(entry.id())) != null
                         || Files.exists(this.packsRoot.resolve(entry.id() + ".zip"))
                         || Files.isDirectory(this.packsRoot.resolve(entry.id()));
                 status = existsUnmanaged
@@ -111,7 +112,7 @@ public final class BannerPackDownloadService {
                 Files.deleteIfExists(temporaryZip);
                 return InstallResult.HASH_MISMATCH;
             }
-            if (BannerPack.loadZipPack(temporaryZip, entry.id()) == null) {
+            if (BannerPack.loadZipPack(temporaryZip, BannerPackId.of(entry.id())) == null) {
                 throw new IOException("Downloaded file is not a valid banner pack: " + entry.id());
             }
             moveIntoPlace(temporaryZip, installedZip);
@@ -147,13 +148,14 @@ public final class BannerPackDownloadService {
                 Util.ioPool());
     }
 
-    public List<String> autoInstallDefaults() throws IOException {
+    public List<BannerPackId> autoInstallDefaults() throws IOException {
         Files.createDirectories(this.packsRoot);
         RemoteRepoIndex index = this.client.fetchIndex();
-        List<String> installedPackIds = new ArrayList<>();
-        for (String packId : Config.AUTO_INSTALL_PACK_IDS) {
+        List<BannerPackId> installedPackIds = new ArrayList<>();
+        for (String packIdStr : Config.AUTO_INSTALL_PACK_IDS) {
+            BannerPackId packId = BannerPackId.of(packIdStr);
             if (Files.exists(this.packsRoot.resolve(packId + ".zip"))
-                    || Files.isDirectory(this.packsRoot.resolve(packId))) {
+                    || Files.isDirectory(this.packsRoot.resolve(packId.id()))) {
                 BannerRecipesMod.LOGGER.info("Skipping auto-install of '{}': it is already on disk", packId);
                 continue;
             }
@@ -192,7 +194,7 @@ public final class BannerPackDownloadService {
             if (!actualHash.equalsIgnoreCase(entry.sha256())) {
                 throw new IOException("SHA-256 mismatch while downloading banner pack " + entry.id());
             }
-            if (BannerPack.loadZipPack(temporaryPath, entry.id()) == null) {
+            if (BannerPack.loadZipPack(temporaryPath, BannerPackId.of(entry.id())) == null) {
                 throw new IOException("Downloaded file is not a valid banner pack: " + entry.id());
             }
             moveIntoPlace(temporaryPath, zipPath);

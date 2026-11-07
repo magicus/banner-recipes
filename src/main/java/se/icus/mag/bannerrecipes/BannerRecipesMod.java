@@ -34,6 +34,7 @@ import se.icus.mag.bannerrecipes.bannerpack.repo.BannerPackDownloadService;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeCategory;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeLayer;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 import se.icus.mag.bannerrecipes.storage.SelectedBannerPacks;
 import se.icus.mag.bannerrecipes.util.Lookup;
 
@@ -104,14 +105,14 @@ public class BannerRecipesMod implements ClientModInitializer {
                                 .autoInstallDefaults();
                     } catch (IOException e) {
                         LOGGER.warn("Could not auto-install default banner packs", e);
-                        return List.<String>of();
+                        return List.<BannerPackId>of();
                     }
                 })
                 .thenAcceptAsync(
                         installedPackIds -> {
                             selectedPacks.load();
                             if (Config.ACTIVATE_ON_DOWNLOAD) {
-                                installedPackIds.forEach(selectedPacks::selectPack);
+                                installedPackIds.forEach(p -> selectedPacks.selectPack(p));
                             }
                         },
                         Minecraft.getInstance())

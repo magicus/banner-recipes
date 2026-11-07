@@ -6,9 +6,10 @@ package se.icus.mag.bannerrecipes.gui.screens.packselection;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
 
 public record BannerPackModelEntry(
-        String packId,
+        BannerPackId packId,
         String title,
         Component description,
         Component secondLine,

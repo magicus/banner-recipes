@@ -69,12 +69,12 @@ public final class SelectedBannerPacks {
         return availablePacks;
     }
 
-    public synchronized List<String> getSelectedPackIds() {
+    public synchronized List<BannerPackId> getSelectedPackIds() {
         ensureLoaded();
         return selectedPacksConfig.getSelectedPacks();
     }
 
-    public synchronized void selectPack(String packId) {
+    public synchronized void selectPack(BannerPackId packId) {
         ensureLoaded();
         if (availablePacks.getAvailablePack(packId) == null) {
             throw new IllegalArgumentException("pack not available: " + packId);
@@ -84,7 +84,7 @@ public final class SelectedBannerPacks {
         rebuildCategoryMetadata();
     }
 
-    public synchronized void deselectPack(String packId) {
+    public synchronized void deselectPack(BannerPackId packId) {
         ensureLoaded();
         selectedPacksConfig.deselectPack(packId);
         rebuildSelectedRecipeList();
@@ -107,7 +107,7 @@ public final class SelectedBannerPacks {
 
     private void rebuildCategoryMetadata() {
         Map<String, BannerRecipeCategory> merged = new LinkedHashMap<>();
-        for (String packId : selectedPacksConfig.getSelectedPacks()) {
+        for (BannerPackId packId : selectedPacksConfig.getSelectedPacks()) {
             var pack = availablePacks.getAvailablePack(packId);
             if (pack == null) continue;
             for (BannerRecipeCategory category : pack.getCategories()) {
@@ -126,7 +126,7 @@ public final class SelectedBannerPacks {
         categories = List.copyOf(result);
 
         Map<String, Map<String, String>> translations = new LinkedHashMap<>();
-        for (String packId : selectedPacksConfig.getSelectedPacks()) {
+        for (BannerPackId packId : selectedPacksConfig.getSelectedPacks()) {
             var pack = availablePacks.getAvailablePack(packId);
             if (pack == null) continue;
             pack.getCategoryTranslations()
@@ -141,7 +141,7 @@ public final class SelectedBannerPacks {
 
     private void rebuildSelectedRecipeList() {
         List<BannerRecipe> selectedRecipes = new ArrayList<>();
-        for (String packId : selectedPacksConfig.getSelectedPacks()) {
+        for (BannerPackId packId : selectedPacksConfig.getSelectedPacks()) {
             var pack = availablePacks.getAvailablePack(packId);
             if (pack != null) selectedRecipes.addAll(pack.getDesigns());
         }

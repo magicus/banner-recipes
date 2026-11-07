@@ -4,4 +4,6 @@
  */
 package se.icus.mag.bannerrecipes.bannerpack;
 
-public record BannerPackMetadata(String id, String description, String author, String url) {}
+import se.icus.mag.bannerrecipes.storage.BannerPackId;
+
+public record BannerPackMetadata(BannerPackId id, String description, String author, String url) {}
