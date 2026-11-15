@@ -4,12 +4,59 @@
  */
 package se.icus.mag.bannerrecipes.util;
 
+import java.util.Map;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 public class Lookup {
+    private static final Map<String, String> LEGACY_PATTERNS = Map.ofEntries(
+            Map.entry("bl", "square_bottom_left"),
+            Map.entry("bo", "border"),
+            Map.entry("br", "square_bottom_right"),
+            Map.entry("bri", "bricks"),
+            Map.entry("bs", "stripe_bottom"),
+            Map.entry("bt", "triangle_bottom"),
+            Map.entry("bts", "triangles_bottom"),
+            Map.entry("cbo", "curly_border"),
+            Map.entry("cr", "cross"),
+            Map.entry("cre", "creeper"),
+            Map.entry("cs", "stripe_center"),
+            Map.entry("dls", "stripe_downleft"),
+            Map.entry("drs", "stripe_downright"),
+            Map.entry("flo", "flower"),
+            Map.entry("glb", "globe"),
+            Map.entry("gra", "gradient"),
+            Map.entry("gru", "gradient_up"),
+            Map.entry("hh", "half_horizontal"),
+            Map.entry("hhb", "half_horizontal_bottom"),
+            Map.entry("ld", "diagonal_left"),
+            Map.entry("ls", "stripe_left"),
+            Map.entry("lud", "diagonal_up_left"),
+            Map.entry("mc", "circle"),
+            Map.entry("moj", "mojang"),
+            Map.entry("mr", "rhombus"),
+            Map.entry("ms", "stripe_middle"),
+            Map.entry("pig", "piglin"),
+            Map.entry("rd", "diagonal_up_right"),
+            Map.entry("rs", "stripe_right"),
+            Map.entry("rud", "diagonal_right"),
+            Map.entry("sc", "straight_cross"),
+            Map.entry("sku", "skull"),
+            Map.entry("ss", "small_stripes"),
+            Map.entry("tl", "square_top_left"),
+            Map.entry("tr", "square_top_right"),
+            Map.entry("ts", "stripe_top"),
+            Map.entry("tt", "triangle_top"),
+            Map.entry("tts", "triangles_top"),
+            Map.entry("vh", "half_vertical"),
+            Map.entry("vhr", "half_vertical_right"));
+
+    public static String convertLegacyPattern(String code) {
+        return LEGACY_PATTERNS.get(code);
+    }
+
     public static Item getBannerFromDyeColor(DyeColor color) {
         return switch (color) {
             case WHITE -> Items.BANNER.white();

@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Optional;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -94,9 +95,17 @@ public class BannerRecipesMod implements ClientModInitializer {
         return MANAGER;
     }
 
+    public static RegistryAccess getRegistryAccess(Minecraft mc) {
+        ClientPacketListener connection = mc.getConnection();
+        if (connection == null) {
+            throw new IllegalStateException("Not connected to a world; registries are unavailable");
+        }
+        return connection.registryAccess();
+    }
+
     public static Registry<BannerPattern> getBannerPatternRegistry(Minecraft mc) {
         Registry<BannerPattern> registry =
-                mc.level.registryAccess().lookup(Registries.BANNER_PATTERN).orElse(null);
+                getRegistryAccess(mc).lookup(Registries.BANNER_PATTERN).orElse(null);
         if (registry == null) {
             LOGGER.error("BannerPattern registry is unavailable — this should never happen");
             throw new IllegalStateException("BannerPattern registry is unavailable");
