@@ -1,4 +1,12 @@
 {
+  "banner-recipes.banner.convert.error_at_pos": "Error at pos %s",
+  "banner-recipes.banner.convert.export_format.command": "/give command",
+  "banner-recipes.banner.convert.export_format.minecraft_tools": "minecraft.tools",
+  "banner-recipes.banner.convert.export_format.need_cooler_shoes": "NeedCoolerShoes",
+  "banner-recipes.banner.convert.export_format.planet_minecraft": "PlanetMinecraft",
+  "banner-recipes.banner.convert.export_format.skin_mc": "SkinMC",
+  "banner-recipes.banner.convert.invalid_syntax": "Invalid syntax",
+  "banner-recipes.banner.unnamed": "Unnamed banner",
   "banner-recipes.subtitles.ui.active_slot_clear": "Banner recipe cleared",
   "banner-recipes.subtitles.ui.active_slot_set": "Banner recipe selected",
   "banner-recipes.tooltip.panel.showing_weavable": "Showing Weavable"

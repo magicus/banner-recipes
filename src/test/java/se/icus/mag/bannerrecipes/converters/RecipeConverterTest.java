@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import se.icus.mag.bannerrecipes.converters.url.OnlineServiceException;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 
-class StringConverterTest {
+class RecipeConverterTest {
     private static final String COMPONENT_ITEM =
             "blue_banner[banner_patterns=[{pattern:\"minecraft:cross\",color:\"white\"}]]";
 
@@ -35,7 +35,7 @@ class StringConverterTest {
     }
 
     private static BannerRecipe parse(String input) throws Exception {
-        return StringConverter.fromString(input, registries);
+        return RecipeConverter.fromString(input, registries);
     }
 
     @ParameterizedTest
