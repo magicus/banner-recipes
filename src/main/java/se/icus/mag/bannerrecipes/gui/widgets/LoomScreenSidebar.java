@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.RecipePanelView;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
+import se.icus.mag.bannerrecipes.gui.screens.ManageBannerRecipesScreen;
 import se.icus.mag.bannerrecipes.gui.tooltip.BannerRecipeTooltipProvider;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 
@@ -28,6 +29,7 @@ public class LoomScreenSidebar implements ScreenExtension {
     private static final int SIDEBAR_OVERLAP = 6;
 
     private static final int BG_LEFT_PADDING = 22;
+    private static final int VANILLA_IMAGE_WIDTH = 176;
 
     private static final int WEAVE_BUTTON_Y_OFFSET = 69;
     private static final int EDIT_BUTTON_Y_OFFSET = 89;
@@ -68,8 +70,9 @@ public class LoomScreenSidebar implements ScreenExtension {
         this.screen = screen;
         this.minecraft = Minecraft.getInstance();
 
-        // Tell parent screen it has gotten wider
-        screen.imageWidth += BG_LEFT_PADDING;
+        // Tell parent screen it has gotten wider. Set absolutely, since the same screen instance can be
+        // initialized several times (e.g. when returning from a child screen or on window resize).
+        screen.imageWidth = VANILLA_IMAGE_WIDTH + BG_LEFT_PADDING;
     }
 
     @Override
