@@ -17,10 +17,13 @@ import se.icus.mag.bannerrecipes.gui.ScreenExtension;
 
 @Mixin(LoomScreen.class)
 public abstract class LoomScreenMixin {
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void onCreated(CallbackInfo ci) {
+        BannerRecipesMod.getManager().createExtension((LoomScreen) (Object) this);
+    }
+
     @Inject(method = "init", at = @At("TAIL"))
     private void initEnd(CallbackInfo ci) {
-        BannerRecipesMod.getManager().createExtension((LoomScreen) (Object) this);
-
         ScreenExtension extension = BannerRecipesMod.getManager().getExtension();
         if (extension == null) return;
 

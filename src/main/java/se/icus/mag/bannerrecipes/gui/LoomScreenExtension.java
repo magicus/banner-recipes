@@ -25,7 +25,8 @@ public class LoomScreenExtension extends DelegatingScreenExtension {
 
     @Override
     public void init() {
-        manager.onLoomScreenOpened(screen.menu);
+        // The screen can be initialized many times (e.g. on resize), so start from a clean slate
+        clearWidgets();
 
         // Always show the sidebar
         this.sidebar = new LoomScreenSidebar(screen);

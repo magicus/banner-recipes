@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import se.icus.mag.bannerrecipes.BannerRecipesMod;
 import se.icus.mag.bannerrecipes.RecipePanelView;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
-import se.icus.mag.bannerrecipes.gui.screens.ManageBannerRecipesScreen;
 import se.icus.mag.bannerrecipes.gui.tooltip.BannerRecipeTooltipProvider;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 

@@ -6,7 +6,6 @@ package se.icus.mag.bannerrecipes;
 
 import java.util.List;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
-import net.minecraft.world.inventory.LoomMenu;
 import se.icus.mag.bannerrecipes.gui.LoomScreenExtension;
 import se.icus.mag.bannerrecipes.gui.ScreenExtension;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
@@ -47,17 +46,14 @@ public class BannerRecipesManager {
 
     public void createExtension(LoomScreen s) {
         this.loomExtension = new LoomScreenExtension(s);
+        this.panelView = new RecipePanelView(persistedStateOpen, persistedStateFiltering);
+        this.activeRecipe = null;
+        this.weaver = Weaver.getWeaver(s.menu);
+        this.weavingGuide = new WeavingGuide(s.menu);
     }
 
     public void removeExtension() {
         this.loomExtension = null;
-    }
-
-    public void onLoomScreenOpened(LoomMenu menu) {
-        panelView = new RecipePanelView(persistedStateOpen, persistedStateFiltering);
-        this.activeRecipe = null;
-        this.weaver = Weaver.getWeaver(menu);
-        this.weavingGuide = new WeavingGuide(menu);
     }
 
     public void onLoomScreenClosed() {

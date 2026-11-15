@@ -23,6 +23,10 @@ public class DelegatingScreenExtension implements ScreenExtension {
         this.widgets.remove(widget);
     }
 
+    public void clearWidgets() {
+        this.widgets.clear();
+    }
+
     @Override
     public void init() {
         for (ScreenExtension widget : widgets) {
