@@ -7,6 +7,7 @@ package se.icus.mag.bannerrecipes.converters.command;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.HolderLookup;
+import se.icus.mag.bannerrecipes.converters.ParseErrors;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 
 /**
@@ -35,7 +36,11 @@ public class CommandConverter {
             throw new IllegalArgumentException("Missing item in give command: " + input);
         }
 
-        return BannerItemConverter.fromBannerItem(reader.getRemaining(), registries);
+        try {
+            return BannerItemConverter.fromBannerItem(reader.getRemaining(), registries);
+        } catch (CommandSyntaxException e) {
+            throw ParseErrors.rebase(e, ParseErrors.leadingWhitespace(input) + reader.getCursor(), input);
+        }
     }
 
     public static String toCommand(BannerRecipe recipe) {

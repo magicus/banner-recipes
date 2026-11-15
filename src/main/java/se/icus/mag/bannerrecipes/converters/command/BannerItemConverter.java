@@ -28,6 +28,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
+import se.icus.mag.bannerrecipes.converters.ParseErrors;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipe;
 import se.icus.mag.bannerrecipes.recipe.BannerRecipeLayer;
 import se.icus.mag.bannerrecipes.util.Lookup;
@@ -53,7 +54,16 @@ import se.icus.mag.bannerrecipes.util.Lookup;
 public class BannerItemConverter {
     public static BannerRecipe fromBannerItem(String input, HolderLookup.Provider registries)
             throws CommandSyntaxException {
-        StringReader reader = new StringReader(input.strip());
+        try {
+            return parseBannerItem(input.strip(), registries);
+        } catch (CommandSyntaxException e) {
+            throw ParseErrors.rebase(e, ParseErrors.leadingWhitespace(input), input);
+        }
+    }
+
+    private static BannerRecipe parseBannerItem(String input, HolderLookup.Provider registries)
+            throws CommandSyntaxException {
+        StringReader reader = new StringReader(input);
         int start = reader.getCursor();
 
         while (reader.canRead()) {

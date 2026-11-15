@@ -97,4 +97,19 @@ class StringConverterTest {
     void otherCommandsAreRejected() {
         assertThrows(IllegalArgumentException.class, () -> parse("/say hello"));
     }
+
+    @Test
+    void syntaxErrorPositionRefersToOriginalInput() {
+        String broken = "blue_banner[banner_patterns=[{pattern:\"minecraft:cross\",color:\"white\"}";
+
+        int plain =
+                assertThrows(CommandSyntaxException.class, () -> parse(broken)).getCursor();
+        int padded = assertThrows(CommandSyntaxException.class, () -> parse("  " + broken))
+                .getCursor();
+        int command = assertThrows(CommandSyntaxException.class, () -> parse("/give @p " + broken))
+                .getCursor();
+
+        assertEquals(plain + 2, padded);
+        assertEquals(plain + "/give @p ".length(), command);
+    }
 }

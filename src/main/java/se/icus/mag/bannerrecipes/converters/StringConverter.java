@@ -39,9 +39,14 @@ public class StringConverter {
         if (URL.matcher(text.strip()).matches()) {
             return UrlConverter.fromUrl(text);
         }
-        if (COMMAND.matcher(text).matches()) {
-            return CommandConverter.fromCommand(text, registries);
+
+        try {
+            if (COMMAND.matcher(text).matches()) {
+                return CommandConverter.fromCommand(text, registries);
+            }
+            return BannerItemConverter.fromBannerItem(text, registries);
+        } catch (CommandSyntaxException e) {
+            throw ParseErrors.rebase(e, ParseErrors.leadingWhitespace(input), input);
         }
-        return BannerItemConverter.fromBannerItem(text, registries);
     }
 }
